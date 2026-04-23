@@ -1,0 +1,87 @@
+[gd_scene format=4 uid="uid://bnkul67drvdmr"]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hudgd"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hudgd")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ForwardButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 272.0
+offset_top = -220.0
+offset_right = 352.0
+offset_bottom = -144.0
+text = "W"
+
+[node name="BackButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 272.0
+offset_top = -132.0
+offset_right = 352.0
+offset_bottom = -56.0
+text = "S"
+
+[node name="LeftButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 188.0
+offset_top = -132.0
+offset_right = 268.0
+offset_bottom = -56.0
+text = "A"
+
+[node name="RightButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 356.0
+offset_top = -132.0
+offset_right = 436.0
+offset_bottom = -56.0
+text = "D"
+
+[node name="JumpButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -150.0
+offset_right = -24.0
+offset_bottom = -24.0
+text = "JUMP"
+
+[node name="MovePad" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -220.0
+offset_right = 244.0
+offset_bottom = -24.0
+
+[node name="MovePadLabel" type="Label" parent="Root/MovePad"]
+layout_mode = 2
+text = "MOVE"
+horizontal_alignment = 1
+vertical_alignment = 1
