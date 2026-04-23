@@ -68,12 +68,6 @@ Climb to berry field → Carry berry → Drop in chute → Berry slides to lake
 - **Convert pits** into new lakes to expand survivable area
 - **Dodge boulders** rolling from hilltops at increasing frequency
 
-### Pressure Systems
-- Lake decays constantly over time
-- Bigger lake = more boulders spawning
-- Berry trees die if the lake dries out
-- Late game: you run further for fewer berries
-
 ---
 
 ## World Lore
@@ -81,27 +75,17 @@ Climb to berry field → Carry berry → Drop in chute → Berry slides to lake
 ### The Terraformer Before You
 When you land you find:
 - A **dead alien suit** near the landing zone — no dialogue, just presence
-- A **signboard** with pictogram instructions — chute, lake, berry, arrow — field notes from a professional who knew they were running out of time
+- A **signboard** with pictogram instructions — field notes from a professional who knew they were running out of time
 - **The Chute** — a pre-built delivery system. Drop berries in. They slide to the lake. This is the machine. This is the theme.
 
-The Terraformer before you had every skill to survive. They built the system. They documented everything. They still died. Now it is your turn.
-
 ### The Berry Field
-At the hilltop the berry field pulses **RGB acid-trip visuals** when full. Beautiful. Dangerous. Boulders spawn here. The planet's most vital resource lives at its most volatile point.
+At the hilltop the berry field pulses **RGB visuals** when full. Beautiful. Dangerous. Boulders spawn here.
 
 ---
 
 ## Multiplayer
 
-### Session System
-- Persistent world — pause and log out anytime
-- Return to same planet same state
-- On return: play solo or invite players
-- Up to 100 players on the same planet
-
-### Why Multiplayer Changes Everything
-Solo play is infinite survival — leaderboard glory only.
-Multiplayer changes the win condition entirely.
+Solo play is infinite survival — leaderboard glory only. Multiplayer changes the win condition entirely.
 
 | Active Players | Rescue Timer |
 |---|---|
@@ -115,30 +99,11 @@ The formula is in the source code. Find it yourself.
 
 ## Easter Eggs
 
-### The Rescue
-Triggered when enough players sustain the planet long enough. A ship lands. You actually made it. Nobody knows the exact conditions until they read the source code. The community will figure it out.
+**The Rescue** — triggered when enough players sustain the planet long enough. We will never announce the conditions.
 
-### The Statue
-The first group to trigger rescue gets permanent statues on the planet. All player names carved in. Every solo player who loads the game after sees them and wonders what happened there. We will never announce this exists.
+**The Statue** — the first group to trigger rescue gets permanent statues on the planet. Every solo player after sees them and wonders.
 
-### The Tombstone Wall
-Every player who dies leaves a small grave at their death location. It shows their survival time. It stays forever. Over time the map fills with graves — a silent history of everyone who tried before you.
-
----
-
-## Screens
-
-| Screen | Type | Notes |
-|---|---|---|
-| Splash | Full | Planet breathing animation, 3–5 seconds |
-| Profile Setup | Full | First time only — enter username or X handle |
-| Main Menu | Full | Solo, Resume, Co-op, Leaderboard, Settings |
-| Co-op Lobby | Full | Create or join room, ready up |
-| Loading | Full | Lore text while assets load |
-| Gameplay | Full | 3D world, minimal HUD |
-| Pause Menu | Overlay | Resume, Save and Exit, Settings |
-| Death | Overlay | Survival time, tombstone placement animation |
-| Leaderboard | Full | All time, today, personal best |
+**The Tombstone Wall** — every dead player leaves a grave at their death location with their survival time. Permanent. Forever.
 
 ---
 
@@ -149,10 +114,11 @@ Every player who dies leaves a small grave at their death location. It shows the
 | Engine | Godot 4 |
 | Export | HTML5 (WebGL) |
 | Language | GDScript |
-| 3D Assets | Low poly, CC BY licensed |
-| Multiplayer | Godot multiplayer API + WebSocket |
-| Persistence | Backend session storage |
-| Leaderboard | Online database |
+| 3D Assets | Low poly, CC BY licensed (GLTF 2.0) |
+| Platform SDK | Wavedash SDK (GDScript addon) |
+| Multiplayer | Wavedash Multiplayer + WebSocket |
+| Leaderboard | Wavedash Leaderboards API |
+| Cloud Saves | Wavedash Cloud Saves API |
 | Deployment | Wavedash + Itch.io |
 
 ---
@@ -161,46 +127,159 @@ Every player who dies leaves a small grave at their death location. It shows the
 
 ```
 terra-engine/
+│
+├── wavedash.toml                        ← Wavedash config (game_id + export path)
+├── project.godot
+├── README.md
+├── DEVNOTE.md
+│
+├── addons/
+│   └── wavedash/                        ← Wavedash GDScript SDK (drop in from GitHub)
+│       └── WavedashSDK.gd               ← Registered as Autoload, listed FIRST
+│
+├── exports/
+│   └── web/                             ← HTML5 export output — wavedash.toml points here
+│
 ├── scenes/
-│   ├── splash.tscn
-│   ├── profile_setup.tscn
-│   ├── main_menu.tscn
-│   ├── coop_lobby.tscn
-│   ├── loading.tscn
-│   ├── gameplay.tscn
-│   ├── leaderboard.tscn
+│   ├── splash.tscn                      ← Logo, planet breathing animation
+│   ├── profile_setup.tscn               ← First time only — username or X handle
+│   ├── main_menu.tscn                   ← Solo, Resume, Co-op, Leaderboard, Settings
+│   ├── coop_lobby.tscn                  ← Create/join room, ready up
+│   ├── loading.tscn                     ← Lore text while assets load
+│   ├── gameplay.tscn                    ← Main 3D world scene
+│   ├── leaderboard.tscn                 ← All time, today, personal best via Wavedash
 │   └── overlays/
-│       ├── pause_menu.tscn
-│       └── death_overlay.tscn
+│       ├── pause_menu.tscn              ← Resume, Save and Exit, Settings
+│       └── death_overlay.tscn           ← Survival time + tombstone placement animation
+│
 ├── scripts/
 │   ├── player/
-│   │   ├── player_controller.gd
-│   │   ├── stamina_system.gd
-│   │   └── inventory.gd
+│   │   ├── player_controller.gd         ← Movement, input, carrying logic
+│   │   ├── stamina_system.gd            ← Drain on move, refill on idle, zero on boulder
+│   │   └── inventory.gd                 ← One item at a time, drop on hit
+│   │
 │   ├── world/
-│   │   ├── lake_system.gd
-│   │   ├── boulder_spawner.gd
-│   │   ├── plant_system.gd
-│   │   └── chute.gd
+│   │   ├── lake_system.gd               ← Berry count → visual state → planet health
+│   │   ├── boulder_spawner.gd           ← Random timing, frequency tied to lake size
+│   │   ├── plant_system.gd              ← Water dependency, seed spreading, decay
+│   │   ├── chute.gd                     ← Receives berry, routes to nearest lake
+│   │   └── pit_converter.gd             ← Converts pit into new lake on interaction
+│   │
 │   ├── multiplayer/
-│   │   ├── session_manager.gd
-│   │   └── sync.gd
+│   │   ├── session_manager.gd           ← Wavedash lobby create/join, player sync
+│   │   └── sync.gd                      ← Position, inventory, world state sync
+│   │
 │   ├── meta/
-│   │   ├── tombstone_manager.gd
-│   │   ├── leaderboard.gd
-│   │   └── rescue_timer.gd        ← 👀
+│   │   ├── tombstone_manager.gd         ← Place grave on death, persist to all sessions
+│   │   ├── leaderboard.gd               ← Posts score via WavedashSDK.post_leaderboard_score
+│   │   ├── cloud_save.gd                ← Saves planet state via Wavedash Cloud Saves
+│   │   └── rescue_timer.gd              ← 👀
+│   │
+│   ├── wavedash/
+│   │   ├── wavedash_init.gd             ← Calls WavedashSDK.init() on game ready
+│   │   ├── wavedash_identity.gd         ← WavedashSDK.get_username() → profile setup
+│   │   └── wavedash_leaderboard.gd      ← Post + fetch survival time scores
+│   │
 │   └── ui/
-│       ├── hud.gd
-│       └── death_overlay.gd
+│       ├── hud.gd                       ← Stamina bar, carried item icon, session timer
+│       └── death_overlay.gd             ← Reads survival time, triggers tombstone drop
+│
 ├── assets/
-│   ├── models/
+│   ├── models/                          ← GLTF exports from Blender, CC BY licensed
+│   │   ├── player.glb
+│   │   ├── dead_suit.glb
+│   │   ├── berry.glb
+│   │   ├── boulder.glb
+│   │   ├── chute.glb
+│   │   ├── signboard.glb
+│   │   └── tombstone.glb
+│   │
 │   ├── textures/
 │   ├── shaders/
-│   │   ├── lake.gdshader
-│   │   └── berry_field_rgb.gdshader
-│   └── audio/
-├── addons/
-└── README.md
+│   │   ├── lake.gdshader                ← Color + displacement tied to berry count
+│   │   └── berry_field_rgb.gdshader     ← RGB pulse when field is full
+│   │
+│   ├── audio/
+│   │   ├── ambient/                     ← Planet hum, wind
+│   │   └── sfx/                         ← Berry drop, boulder roll, stamina low
+│   │
+│   └── CREDITS.md                       ← All CC BY asset attributions listed here
+│
+└── LICENSE
+```
+
+---
+
+## Wavedash Integration
+
+### Setup
+```bash
+# 1. Download SDK from https://github.com/wvdsh/sdk-godot
+# Place folder at res://addons/wavedash/
+
+# 2. Register Autoload
+# Project > Project Settings > Autoload
+# Add WavedashSDK.gd as "WavedashSDK"
+# IMPORTANT: Must be FIRST in autoload list
+
+# 3. Export HTML5
+# Project > Export > Web
+# Enable Threads support
+# Export output to ./exports/web/
+```
+
+### wavedash.toml
+```toml
+game_id = "YOUR_GAME_ID_HERE"
+upload_dir = "./exports/web"
+
+[godot]
+version = "4.5-stable"
+```
+
+### SDK Usage in Terra Engine
+```gdscript
+# wavedash_init.gd — runs on game start
+func _ready():
+    WavedashSDK.backend_connected.connect(_on_connected)
+    WavedashSDK.init({"debug": true})
+    WavedashSDK.ready_for_events()
+
+func _on_connected(_payload):
+    print("Playing as: ", WavedashSDK.get_username())
+
+# leaderboard.gd — posts survival time on death
+func post_survival_time(seconds: int):
+    var response = await WavedashSDK.post_leaderboard_score(
+        "survival_time",
+        seconds,
+        true
+    )
+    if response.success:
+        print("Leaderboard rank: ", response.data.globalRank)
+```
+
+### What Wavedash Handles For You
+- Player identity and username
+- Leaderboard (survival time scores)
+- Cloud saves (planet state persistence)
+- Multiplayer lobbies (co-op session creation)
+- Multiplayer networking (player sync)
+
+---
+
+## Deploy to Wavedash
+
+```bash
+# Install Wavedash CLI
+npm install -g @wavedash/cli
+
+# Authenticate
+wavedash login
+
+# Deploy
+wavedash upload
+wavedash publish
 ```
 
 ---
@@ -208,7 +287,6 @@ terra-engine/
 ## Running Locally
 
 ```bash
-# Clone the repo
 git clone https://github.com/tobiawolaju/terra-engine
 cd terra-engine
 
@@ -216,22 +294,15 @@ cd terra-engine
 # File → Open Project → select project.godot
 
 # Export HTML5
-# Project → Export → HTML5 → Export Project
+# Project → Export → Web → Export Project → ./exports/web/
 ```
-
----
-
-## Playing Online
-
-Live at: **[itch.io link]**
-Also deployed on: **[Wavedash link]**
 
 ---
 
 ## Asset Credits
 
 All 3D assets used under Creative Commons CC BY 4.0 license.
-Full credits list in `/assets/CREDITS.md`
+Full credits in `/assets/CREDITS.md`
 
 ---
 
@@ -246,7 +317,7 @@ Full credits list in `/assets/CREDITS.md`
 
 ## License
 
-MIT License — see `LICENSE` file for details.
+MIT — see `LICENSE` for details.
 
 Open source. Read the code. The answers are in there.
 
