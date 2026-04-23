@@ -5,12 +5,12 @@ const JUMP_VELOCITY: float = 9.8
 const SPEED: float = 12.0
 
 @export var camera: Camera3D
-@export var camera_distance: float = 8.0
+@export var camera_distance: float = 10.0
 @export var camera_smoothness: float = 8.0
 @export var camera_screen_offset: Vector2 = Vector2(0.0, -0.15)
 @export var min_pitch: float = deg_to_rad(-10.0)
 @export var max_pitch: float = deg_to_rad(60.0)
-@export var min_zoom: float = 6.0
+@export var min_zoom: float = 8.0
 @export var max_zoom: float = 14.0
 @export var altitude_zoom_factor: float = 1.25
 @export var mouse_orbit_sensitivity: float = 0.005
