@@ -10,10 +10,15 @@ config_version=5
 
 [application]
 
-config/name="TerraEngine"
+config/name="TerraEngineer"
 run/main_scene="uid://do0trvurfqs4d"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [input]
 
