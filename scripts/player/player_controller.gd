@@ -23,12 +23,6 @@ const SPEED: float = 12.0
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
 var current_animation: String = "idle"
-
-
-func _enter_tree() -> void:
-	pass
-
-
 func _ready() -> void:
 	camera_distance = clampf(camera_distance, min_zoom, max_zoom)
 	_ensure_animation_loops()
