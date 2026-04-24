@@ -83,20 +83,6 @@ At the hilltop the berry field pulses **RGB visuals** when full. Beautiful. Dang
 
 ---
 
-## Multiplayer
-
-Solo play is infinite survival — leaderboard glory only. Multiplayer changes the win condition entirely.
-
-| Active Players | Rescue Timer |
-|---|---|
-| 1 | ~1 year IRL — effectively infinite |
-| 10 | Hours |
-| 100 | Minutes |
-
-The formula is in the source code. Find it yourself.
-
----
-
 ## Easter Eggs
 
 **The Rescue** — triggered when enough players sustain the planet long enough. We will never announce the conditions.
@@ -116,7 +102,6 @@ The formula is in the source code. Find it yourself.
 | Language | GDScript |
 | 3D Assets | Low poly, CC BY licensed (GLTF 2.0) |
 | Platform SDK | Wavedash SDK (GDScript addon) |
-| Multiplayer | Wavedash Multiplayer + WebSocket |
 | Leaderboard | Wavedash Leaderboards API |
 | Cloud Saves | Wavedash Cloud Saves API |
 | Deployment | Wavedash + Itch.io |
@@ -143,8 +128,7 @@ terra-engine/
 ├── scenes/
 │   ├── splash.tscn                      ← Logo, planet breathing animation
 │   ├── profile_setup.tscn               ← First time only — username or X handle
-│   ├── main_menu.tscn                   ← Solo, Resume, Co-op, Leaderboard, Settings
-│   ├── coop_lobby.tscn                  ← Create/join room, ready up
+│   ├── main_menu.tscn                   ← Play, Leaderboard
 │   ├── loading.tscn                     ← Lore text while assets load
 │   ├── gameplay.tscn                    ← Main 3D world scene
 │   ├── leaderboard.tscn                 ← All time, today, personal best via Wavedash
@@ -164,10 +148,6 @@ terra-engine/
 │   │   ├── plant_system.gd              ← Water dependency, seed spreading, decay
 │   │   ├── chute.gd                     ← Receives berry, routes to nearest lake
 │   │   └── pit_converter.gd             ← Converts pit into new lake on interaction
-│   │
-│   ├── multiplayer/
-│   │   ├── session_manager.gd           ← Wavedash lobby create/join, player sync
-│   │   └── sync.gd                      ← Position, inventory, world state sync
 │   │
 │   ├── meta/
 │   │   ├── tombstone_manager.gd         ← Place grave on death, persist to all sessions
@@ -263,8 +243,6 @@ func post_survival_time(seconds: int):
 - Player identity and username
 - Leaderboard (survival time scores)
 - Cloud saves (planet state persistence)
-- Multiplayer lobbies (co-op session creation)
-- Multiplayer networking (player sync)
 
 ---
 
