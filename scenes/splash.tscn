@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://2wuji004ymv2"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="1_86pdq"]
-[ext_resource type="Script" path="res://scripts/ui/splash.gd" id="2_splash"]
+[ext_resource type="Script" uid="uid://cdap1wyik3whg" path="res://scripts/ui/splash.gd" id="2_splash"]
 
 [node name="Splash" type="Node2D" unique_id=1638391196]
 script = ExtResource("2_splash")
@@ -9,7 +9,7 @@ script = ExtResource("2_splash")
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1478624101]
 offset_right = 1163.0
 offset_bottom = 652.0
-color = Color(0.60141796, 0.88594747, 0.5836707, 1)
+color = Color(0, 0, 0, 1)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=483064880]
 
@@ -42,7 +42,7 @@ offset_right = 81.0
 offset_bottom = 181.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.27058825, 0.7176471, 0.25882354, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 0.5411765)
 theme_override_fonts/font = ExtResource("1_86pdq")
 theme_override_font_sizes/font_size = 50
 text = "Engine"
