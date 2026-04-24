@@ -19,6 +19,7 @@ const SPEED: float = 12.0
 @export var anim_run: AnimationPlayer
 @export var anim_idle: AnimationPlayer
 @export var anim_jump: AnimationPlayer
+@export var anim_swim: AnimationPlayer
 @export var armature: Node3D
 
 var cam_rot_x: float = deg_to_rad(15.0)
@@ -56,6 +57,7 @@ func _mouse_over_joystick(mouse_pos: Vector2) -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	var is_in_water: bool = global_position.y < 0.0
 	var input_dir: Vector2 = Vector2.ZERO
 	input_dir.y += Input.get_action_strength("forward")
 	input_dir.y -= Input.get_action_strength("backward")
@@ -63,13 +65,14 @@ func _physics_process(delta: float) -> void:
 	input_dir.x += Input.get_action_strength("right")
 	input_dir = input_dir.normalized()
 
-	if not is_on_floor():
+	if not is_on_floor() and not is_in_water:
 		velocity.y -= GRAVITY * delta
 	else:
 		velocity.y = 0.0
-		if Input.is_action_just_pressed("jump"):
+		if Input.is_action_just_pressed("jump") and not is_in_water:
 			velocity.y = JUMP_VELOCITY
 
+	var speed_multiplier: float = 0.5 if is_in_water else 1.0
 	var move_direction: Vector3 = Vector3.ZERO
 	if camera != null:
 		var cam_basis: Basis = camera.global_transform.basis
@@ -88,13 +91,13 @@ func _physics_process(delta: float) -> void:
 	if move_direction.length() > 0.0:
 		move_direction = move_direction.normalized()
 
-	velocity.x = move_direction.x * SPEED
-	velocity.z = move_direction.z * SPEED
+	velocity.x = move_direction.x * SPEED * speed_multiplier
+	velocity.z = move_direction.z * SPEED * speed_multiplier
 	move_and_slide()
 
 	_update_armature_facing(move_direction, delta)
 	_update_camera(delta)
-	_handle_animations(move_direction)
+	_handle_animations(move_direction, is_in_water)
 
 
 func _update_camera(delta: float) -> void:
@@ -128,7 +131,11 @@ func _update_camera(delta: float) -> void:
 	camera.v_offset = -camera_screen_offset.y * half_height
 
 
-func _handle_animations(move_dir: Vector3) -> void:
+func _handle_animations(move_dir: Vector3, is_in_water: bool) -> void:
+	if is_in_water:
+		_set_animation_state("swim")
+		return
+
 	if not is_on_floor():
 		_set_animation_state("jump")
 		return
@@ -158,13 +165,28 @@ func _set_animation_state(next_state: String) -> void:
 			anim_idle.stop()
 		if anim_run and anim_run.is_playing():
 			anim_run.stop()
+		if anim_swim and anim_swim.is_playing():
+			anim_swim.stop()
 		if anim_jump:
 			anim_jump.play("jump", animation_blend_time)
+		return
+
+	if next_state == "swim":
+		if anim_idle and anim_idle.is_playing():
+			anim_idle.stop()
+		if anim_run and anim_run.is_playing():
+			anim_run.stop()
+		if anim_jump and anim_jump.is_playing():
+			anim_jump.stop()
+		if anim_swim:
+			anim_swim.play("swim", animation_blend_time)
 		return
 
 	if next_state == "running":
 		if anim_jump and anim_jump.is_playing():
 			anim_jump.stop()
+		if anim_swim and anim_swim.is_playing():
+			anim_swim.stop()
 		if anim_idle and anim_idle.is_playing():
 			anim_idle.stop()
 		if anim_run:
@@ -172,6 +194,8 @@ func _set_animation_state(next_state: String) -> void:
 	else:
 		if anim_jump and anim_jump.is_playing():
 			anim_jump.stop()
+		if anim_swim and anim_swim.is_playing():
+			anim_swim.stop()
 		if anim_run and anim_run.is_playing():
 			anim_run.stop()
 		if anim_idle:
@@ -189,4 +213,8 @@ func _ensure_animation_loops() -> void:
 
 	if anim_jump and anim_jump.has_animation("jump"):
 		var jump_animation: Animation = anim_jump.get_animation("jump")
-		jump_animation.loop_mode = Animation.LOOP_NONE
+		jump_animation.loop_mode = Animation.LOOP_LINEAR
+
+	if anim_swim and anim_swim.has_animation("swim"):
+		var swim_animation: Animation = anim_swim.get_animation("swim")
+		swim_animation.loop_mode = Animation.LOOP_LINEAR

@@ -59,3 +59,18 @@ offset_top = 70.0
 offset_right = 150.0
 offset_bottom = 150.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
+
+[node name="Action" type="Panel" parent="." unique_id=1817801479]
+custom_minimum_size = Vector2(80, 80)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -161.0
+offset_top = -168.0
+offset_right = -81.0
+offset_bottom = -88.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
