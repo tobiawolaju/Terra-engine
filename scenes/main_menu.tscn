@@ -9,10 +9,10 @@ script = ExtResource("3_menu")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1717860935]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1195131001]
-offset_left = -1586.0
-offset_top = -1561.0
-offset_right = 2613.0
-offset_bottom = 2331.0
+offset_left = -3630.0
+offset_top = -3809.0
+offset_right = 4861.0
+offset_bottom = 4523.0
 color = Color(0, 0, 0, 1)
 
 [node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
@@ -58,7 +58,7 @@ offset_top = -37.0
 offset_right = 141.0
 offset_bottom = -11.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.5647059, 0, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 25
 text = "username"

@@ -6,14 +6,14 @@
 [node name="Splash" type="Node2D" unique_id=1638391196]
 script = ExtResource("2_splash")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1478624101]
-offset_left = -1586.0
-offset_top = -1561.0
-offset_right = 2613.0
-offset_bottom = 2331.0
-color = Color(0, 0, 0, 1)
-
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=483064880]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=668946053]
+offset_left = -3630.0
+offset_top = -3809.0
+offset_right = 4861.0
+offset_bottom = 4523.0
+color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=70749669]
 anchors_preset = 8
