@@ -8,11 +8,12 @@ script = ExtResource("3_menu")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1717860935]
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1923454325]
-offset_right = 1163.0
-offset_bottom = 652.0
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1195131001]
+offset_left = -1586.0
+offset_top = -1561.0
+offset_right = 2613.0
+offset_bottom = 2331.0
 color = Color(0, 0, 0, 1)
-metadata/_edit_use_anchors_ = true
 
 [node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
 anchors_preset = 8
