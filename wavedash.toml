@@ -1,0 +1,6 @@
+game_id = "j9720zs7eefdkj2wv5n1f152w585ff4h"
+upload_dir = "./webexport"
+entrypoint = "index.html"
+
+[godot]
+version = "4.4"
