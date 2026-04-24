@@ -1,3 +1,6 @@
 [gd_scene format=3 uid="uid://pf8m4jx80r6"]
 
+[ext_resource type="Script" path="res://scripts/ui/leaderboard_screen.gd" id="1_lbscn"]
+
 [node name="Leaderboard" type="Node2D" unique_id=355785601]
+script = ExtResource("1_lbscn")

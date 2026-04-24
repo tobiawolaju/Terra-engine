@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://2wuji004ymv2"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="1_86pdq"]
+[ext_resource type="Script" path="res://scripts/ui/splash.gd" id="2_splash"]
 
 [node name="Splash" type="Node2D" unique_id=1638391196]
+script = ExtResource("2_splash")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1478624101]
 offset_right = 1163.0

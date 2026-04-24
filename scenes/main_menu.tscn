@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://dtrbeqj8cyhx5"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_bqqt6"]
+[ext_resource type="Script" uid="uid://cl1ejphg8ne5v" path="res://scripts/ui/main_menu.gd" id="3_menu"]
 
 [node name="MainMenu" type="Node2D" unique_id=104621629]
+script = ExtResource("3_menu")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=634757942]
 

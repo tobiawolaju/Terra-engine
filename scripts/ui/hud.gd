@@ -12,6 +12,8 @@ signal joystick_released
 
 @onready var joy_base: Control = get_node(joy_base_path)
 @onready var joy_knob: Control = get_node(joy_knob_path)
+@onready var username_label: Label = $Username
+@onready var score_label: Label = $Score
 
 var _active_touch_index: int = -1
 var _mouse_drag_active: bool = false
@@ -27,6 +29,8 @@ func _ready() -> void:
 	joy_base.gui_input.connect(_on_joy_base_gui_input)
 	_refresh_geometry()
 	_reset_joystick()
+	set_username("...")
+	set_elapsed_time(0)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -164,3 +168,24 @@ func _screen_to_base_local(screen_pos: Vector2) -> Vector2:
 		return screen_pos
 	var canvas_transform: Transform2D = joy_base.get_global_transform_with_canvas()
 	return canvas_transform.affine_inverse() * screen_pos
+
+
+func set_username(username: String) -> void:
+	if username_label == null:
+		return
+	username_label.text = "Player: " + username
+
+
+func set_elapsed_time(seconds: int, target_seconds: int = -1) -> void:
+	if score_label == null:
+		return
+	if target_seconds > 0:
+		score_label.text = "Time: %ss / %ss" % [seconds, target_seconds]
+	else:
+		score_label.text = "Time: %ss" % seconds
+
+
+func set_score_text(text: String) -> void:
+	if score_label == null:
+		return
+	score_label.text = text

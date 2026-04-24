@@ -3,6 +3,7 @@ extends CharacterBody3D
 const GRAVITY: float = 12.0
 const JUMP_VELOCITY: float = 9.8 
 const SPEED: float = 12.0
+const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 
 @export var camera: Camera3D
 @export var camera_distance: float = 10.0
@@ -25,10 +26,18 @@ const SPEED: float = 12.0
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
 var current_animation: String = "idle"
+var _sim_target_seconds: int = 0
+var _sim_elapsed_seconds: int = 0
+var _sim_completed: bool = false
+
+@onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
+@onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
+
 func _ready() -> void:
 	camera_distance = clampf(camera_distance, min_zoom, max_zoom)
 	_ensure_animation_loops()
 	_set_animation_state("idle")
+	_setup_session_flow()
 
 
 func _input(event: InputEvent) -> void:
@@ -218,3 +227,49 @@ func _ensure_animation_loops() -> void:
 	if anim_swim and anim_swim.has_animation("swim"):
 		var swim_animation: Animation = anim_swim.get_animation("swim")
 		swim_animation.loop_mode = Animation.LOOP_LINEAR
+
+
+func _setup_session_flow() -> void:
+	randomize()
+	WavedashFlow.ensure_initialized()
+	var username: String = WavedashFlow.get_username()
+	if _username_3d != null:
+		_username_3d.text = username
+	if _hud != null and _hud.has_method("set_username"):
+		_hud.call("set_username", username)
+	_start_simulation()
+
+
+func _start_simulation() -> void:
+	_sim_target_seconds = randi_range(10, 60)
+	_sim_elapsed_seconds = 0
+	_sim_completed = false
+	if _hud != null and _hud.has_method("set_elapsed_time"):
+		_hud.call("set_elapsed_time", _sim_elapsed_seconds, _sim_target_seconds)
+	_run_simulation()
+
+
+func _run_simulation() -> void:
+	while _sim_elapsed_seconds < _sim_target_seconds and is_inside_tree():
+		await get_tree().create_timer(1.0).timeout
+		_sim_elapsed_seconds += 1
+		if _hud != null and _hud.has_method("set_elapsed_time"):
+			_hud.call("set_elapsed_time", _sim_elapsed_seconds, _sim_target_seconds)
+
+	if _sim_completed or not is_inside_tree():
+		return
+	_sim_completed = true
+
+	var response: Dictionary = await WavedashFlow.post_survival_time(_sim_elapsed_seconds)
+	if _hud != null and _hud.has_method("set_score_text"):
+		if bool(response.get("success", false)):
+			var rank_text := "N/A"
+			if WavedashFlow.last_rank > 0:
+				rank_text = str(WavedashFlow.last_rank)
+			_hud.call("set_score_text", "Final: %ss  Rank: %s" % [_sim_elapsed_seconds, rank_text])
+		else:
+			_hud.call("set_score_text", "Final: %ss  (score post failed)" % _sim_elapsed_seconds)
+
+	await get_tree().create_timer(1.2).timeout
+	if is_inside_tree():
+		get_tree().change_scene_to_file(LEADERBOARD_SCENE)
