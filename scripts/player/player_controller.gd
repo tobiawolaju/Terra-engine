@@ -3,13 +3,17 @@ extends CharacterBody3D
 const GRAVITY: float = 12.0
 const JUMP_VELOCITY: float = 9.8 
 const SPEED: float = 12.0
-const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 
 @export var camera: Camera3D
+@export var hold_anchor: Node3D
+@export var auto_compensate_anchor_scale: bool = true
+@export var hold_offset_scale: float = 1.0
+@export var pickup_range: float = 3.0
+@export var hold_lerp_speed: float = 16.0
 @export var camera_distance: float = 10.0
 @export var camera_smoothness: float = 8.0
 @export var camera_screen_offset: Vector2 = Vector2(0.0, -0.15)
-@export var min_pitch: float = deg_to_rad(10.0)
+@export var min_pitch: float = deg_to_rad(15.0)
 @export var max_pitch: float = deg_to_rad(60.0)
 @export var min_zoom: float = 8.0
 @export var max_zoom: float = 14.0
@@ -26,14 +30,16 @@ const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
 var current_animation: String = "idle"
-var _sim_target_seconds: int = 0
-var _sim_elapsed_seconds: int = 0
-var _sim_completed: bool = false
+var _held_pickable: Pickable
+var _pick_action_available: bool = false
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
 
 func _ready() -> void:
+	_pick_action_available = InputMap.has_action("pick")
+	if not _pick_action_available:
+		push_warning("Input action 'pick' is missing. Add it in Project Settings > Input Map.")
 	camera_distance = clampf(camera_distance, min_zoom, max_zoom)
 	_ensure_animation_loops()
 	_set_animation_state("idle")
@@ -66,6 +72,11 @@ func _mouse_over_joystick(mouse_pos: Vector2) -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	if _pick_action_available and Input.is_action_just_pressed("pick"):
+		_toggle_pickup()
+
+	_update_held_pickable(delta)
+
 	var is_in_water: bool = global_position.y < 0.0
 	var input_dir: Vector2 = Vector2.ZERO
 	input_dir.y += Input.get_action_strength("forward")
@@ -230,46 +241,103 @@ func _ensure_animation_loops() -> void:
 
 
 func _setup_session_flow() -> void:
-	randomize()
 	WavedashFlow.ensure_initialized()
 	var username: String = WavedashFlow.get_username()
 	if _username_3d != null:
 		_username_3d.text = username
 	if _hud != null and _hud.has_method("set_username"):
 		_hud.call("set_username", username)
-	_start_simulation()
-
-
-func _start_simulation() -> void:
-	_sim_target_seconds = randi_range(10, 60)
-	_sim_elapsed_seconds = 0
-	_sim_completed = false
 	if _hud != null and _hud.has_method("set_elapsed_time"):
-		_hud.call("set_elapsed_time", _sim_elapsed_seconds, _sim_target_seconds)
-	_run_simulation()
+		_hud.call("set_elapsed_time", 0)
 
 
-func _run_simulation() -> void:
-	while _sim_elapsed_seconds < _sim_target_seconds and is_inside_tree():
-		await get_tree().create_timer(1.0).timeout
-		_sim_elapsed_seconds += 1
-		if _hud != null and _hud.has_method("set_elapsed_time"):
-			_hud.call("set_elapsed_time", _sim_elapsed_seconds, _sim_target_seconds)
-
-	if _sim_completed or not is_inside_tree():
+func _toggle_pickup() -> void:
+	if _held_pickable != null:
+		_drop_held_pickable()
 		return
-	_sim_completed = true
 
-	var response: Dictionary = await WavedashFlow.post_survival_time(_sim_elapsed_seconds)
-	if _hud != null and _hud.has_method("set_score_text"):
-		if bool(response.get("success", false)):
-			var rank_text := "N/A"
-			if WavedashFlow.last_rank > 0:
-				rank_text = str(WavedashFlow.last_rank)
-			_hud.call("set_score_text", "Final: %ss  Rank: %s" % [_sim_elapsed_seconds, rank_text])
-		else:
-			_hud.call("set_score_text", "Final: %ss  (score post failed)" % _sim_elapsed_seconds)
+	var nearest_pickable: Pickable = _find_nearest_pickable()
+	if nearest_pickable != null:
+		_pick_pickable(nearest_pickable)
 
-	await get_tree().create_timer(1.2).timeout
-	if is_inside_tree():
-		await ScreenFader.change_scene(LEADERBOARD_SCENE)
+
+func _pick_pickable(target_pickable: Pickable) -> void:
+	_held_pickable = target_pickable
+	_held_pickable.freeze = true
+	_held_pickable.sleeping = false
+	_held_pickable.linear_velocity = Vector3.ZERO
+	_held_pickable.angular_velocity = Vector3.ZERO
+	_held_pickable.add_collision_exception_with(self)
+
+
+func _drop_held_pickable() -> void:
+	if _held_pickable == null:
+		return
+
+	_held_pickable.remove_collision_exception_with(self)
+	_held_pickable.freeze = false
+	_held_pickable.sleeping = false
+	_held_pickable = null
+
+
+func _update_held_pickable(delta: float) -> void:
+	if _held_pickable == null:
+		return
+
+	if not is_instance_valid(_held_pickable):
+		_held_pickable = null
+		return
+
+	var target_pos: Vector3 = _get_hold_target_position(_held_pickable)
+	_held_pickable.linear_velocity = Vector3.ZERO
+	_held_pickable.angular_velocity = Vector3.ZERO
+	_held_pickable.global_position = _held_pickable.global_position.lerp(
+		target_pos,
+		clampf(delta * hold_lerp_speed, 0.0, 1.0)
+	)
+
+
+func _get_hold_target_position(target_pickable: Pickable) -> Vector3:
+	var anchor: Node3D = hold_anchor if hold_anchor != null else self
+	var compensation: float = _get_anchor_compensation_scale(anchor) if auto_compensate_anchor_scale else 1.0
+	var base_anchor_position: Vector3 = global_position + (anchor.global_position - global_position) * compensation
+	var offset: Vector3 = target_pickable.hold_offset * hold_offset_scale * compensation
+	var basis: Basis = anchor.global_transform.basis
+	var up: Vector3 = basis.y.normalized()
+	var right: Vector3 = basis.x.normalized()
+	var forward: Vector3 = -basis.z.normalized()
+	return base_anchor_position + (up * offset.y) + (right * offset.x) + (forward * -offset.z)
+
+
+func _get_anchor_compensation_scale(anchor: Node3D) -> float:
+	var anchor_scale: Vector3 = anchor.global_transform.basis.get_scale().abs()
+	var self_scale: Vector3 = global_transform.basis.get_scale().abs()
+
+	var rel_x: float = anchor_scale.x / maxf(self_scale.x, 0.001)
+	var rel_y: float = anchor_scale.y / maxf(self_scale.y, 0.001)
+	var rel_z: float = anchor_scale.z / maxf(self_scale.z, 0.001)
+	var relative_uniform_scale: float = (rel_x + rel_y + rel_z) / 3.0
+
+	if relative_uniform_scale <= 0.001:
+		return 1.0
+
+	return 1.0 / relative_uniform_scale
+
+
+func _find_nearest_pickable() -> Pickable:
+	var nearest: Pickable
+	var nearest_distance_sq: float = pickup_range * pickup_range
+
+	for node: Node in get_tree().get_nodes_in_group("pickable"):
+		var candidate := node as Pickable
+		if candidate == null or not is_instance_valid(candidate):
+			continue
+		if candidate == _held_pickable:
+			continue
+
+		var distance_sq: float = candidate.global_position.distance_squared_to(global_position)
+		if distance_sq <= nearest_distance_sq:
+			nearest_distance_sq = distance_sq
+			nearest = candidate
+
+	return nearest
