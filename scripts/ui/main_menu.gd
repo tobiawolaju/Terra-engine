@@ -4,6 +4,7 @@ const GAMEPLAY_SCENE := "res://scenes/gameplay.tscn"
 const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 
 @onready var _solo_label: Label = $CanvasLayer/solo
+@onready var _coop_label: Label = get_node_or_null("CanvasLayer/co-op")
 @onready var _leaderboard_label: Label = $CanvasLayer/leaderboard
 @onready var _username_label: Label = $CanvasLayer/username
 
@@ -28,9 +29,13 @@ func _input(event: InputEvent) -> void:
 		return
 
 	var cursor_pos: Vector2 = get_viewport().get_mouse_position()
-	if _solo_label.get_global_rect().has_point(cursor_pos):
+	if _solo_label != null and _solo_label.get_global_rect().has_point(cursor_pos):
+		WavedashFlow.multiplayer_enabled = false
 		get_tree().change_scene_to_file(GAMEPLAY_SCENE)
-	elif _leaderboard_label.get_global_rect().has_point(cursor_pos):
+	elif _coop_label != null and _coop_label.get_global_rect().has_point(cursor_pos):
+		WavedashFlow.multiplayer_enabled = true
+		get_tree().change_scene_to_file(GAMEPLAY_SCENE)
+	elif _leaderboard_label != null and _leaderboard_label.get_global_rect().has_point(cursor_pos):
 		get_tree().change_scene_to_file(LEADERBOARD_SCENE)
 
 

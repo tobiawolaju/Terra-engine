@@ -4,6 +4,8 @@ const GRAVITY: float = 12.0
 const JUMP_VELOCITY: float = 9.8 
 const SPEED: float = 12.0
 const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
+const COOP_P2P_CHANNEL := 1
+const COOP_SYNC_INTERVAL := 0.1
 
 @export var camera: Camera3D
 @export var camera_distance: float = 10.0
@@ -29,6 +31,13 @@ var current_animation: String = "idle"
 var _sim_target_seconds: int = 0
 var _sim_elapsed_seconds: int = 0
 var _sim_completed: bool = false
+var _coop_active: bool = false
+var _coop_lobby_id: String = ""
+var _self_user_id: String = ""
+var _sync_accumulator: float = 0.0
+var _remote_players: Dictionary = {}
+var _remote_target_positions: Dictionary = {}
+var _remote_root: Node3D
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -38,6 +47,15 @@ func _ready() -> void:
 	_ensure_animation_loops()
 	_set_animation_state("idle")
 	_setup_session_flow()
+
+
+func _exit_tree() -> void:
+	if WavedashSDK.lobby_users_updated.is_connected(_on_lobby_users_updated):
+		WavedashSDK.lobby_users_updated.disconnect(_on_lobby_users_updated)
+	if WavedashSDK.lobby_left.is_connected(_on_lobby_left):
+		WavedashSDK.lobby_left.disconnect(_on_lobby_left)
+	if WavedashSDK.lobby_kicked.is_connected(_on_lobby_kicked):
+		WavedashSDK.lobby_kicked.disconnect(_on_lobby_kicked)
 
 
 func _input(event: InputEvent) -> void:
@@ -107,6 +125,7 @@ func _physics_process(delta: float) -> void:
 	_update_armature_facing(move_direction, delta)
 	_update_camera(delta)
 	_handle_animations(move_direction, is_in_water)
+	_update_coop(delta)
 
 
 func _update_camera(delta: float) -> void:
@@ -233,10 +252,13 @@ func _setup_session_flow() -> void:
 	randomize()
 	WavedashFlow.ensure_initialized()
 	var username: String = WavedashFlow.get_username()
+	_self_user_id = WavedashSDK.get_user_id()
 	if _username_3d != null:
 		_username_3d.text = username
 	if _hud != null and _hud.has_method("set_username"):
 		_hud.call("set_username", username)
+	if WavedashFlow.multiplayer_enabled:
+		_start_coop_mode()
 	_start_simulation()
 
 
@@ -273,3 +295,152 @@ func _run_simulation() -> void:
 	await get_tree().create_timer(1.2).timeout
 	if is_inside_tree():
 		get_tree().change_scene_to_file(LEADERBOARD_SCENE)
+
+
+func _start_coop_mode() -> void:
+	_coop_active = await WavedashFlow.ensure_auto_room_joined(32)
+	if not _coop_active:
+		if _hud != null and _hud.has_method("set_score_text"):
+			_hud.call("set_score_text", "Co-op room unavailable, running solo.")
+		return
+
+	_coop_lobby_id = WavedashFlow.get_current_lobby_id()
+	_remote_root = Node3D.new()
+	_remote_root.name = "RemotePlayers"
+	get_node("../../").add_child(_remote_root)
+	_sync_remote_users()
+	if not WavedashSDK.lobby_users_updated.is_connected(_on_lobby_users_updated):
+		WavedashSDK.lobby_users_updated.connect(_on_lobby_users_updated)
+	if not WavedashSDK.lobby_left.is_connected(_on_lobby_left):
+		WavedashSDK.lobby_left.connect(_on_lobby_left)
+	if not WavedashSDK.lobby_kicked.is_connected(_on_lobby_kicked):
+		WavedashSDK.lobby_kicked.connect(_on_lobby_kicked)
+
+
+func _update_coop(delta: float) -> void:
+	if not _coop_active:
+		return
+	_sync_accumulator += delta
+	if _sync_accumulator >= COOP_SYNC_INTERVAL:
+		_sync_accumulator = 0.0
+		_broadcast_local_state()
+	_consume_remote_state()
+	_interpolate_remote_players(delta)
+
+
+func _broadcast_local_state() -> void:
+	var payload := {
+		"x": global_position.x,
+		"y": global_position.y,
+		"z": global_position.z,
+		"u": WavedashFlow.get_username()
+	}
+	WavedashSDK.send_p2p_message("", JSON.stringify(payload).to_utf8_buffer(), COOP_P2P_CHANNEL, false)
+
+
+func _consume_remote_state() -> void:
+	var packets: Array[Dictionary] = WavedashSDK.drain_p2p_channel(COOP_P2P_CHANNEL)
+	for packet in packets:
+		var from_id: String = str(packet.get("identity", ""))
+		if from_id == "" or from_id == _self_user_id:
+			continue
+		var payload: Variant = packet.get("payload", PackedByteArray())
+		if not (payload is PackedByteArray):
+			continue
+		var payload_text: String = (payload as PackedByteArray).get_string_from_utf8()
+		var parsed: Variant = JSON.parse_string(payload_text)
+		if not (parsed is Dictionary):
+			continue
+		_apply_remote_state(from_id, parsed as Dictionary)
+
+
+func _apply_remote_state(user_id: String, state: Dictionary) -> void:
+	if not _remote_players.has(user_id):
+		var username := str(state.get("u", WavedashSDK.get_username(user_id)))
+		_spawn_remote_player(user_id, username)
+	var target := Vector3(
+		float(state.get("x", 0.0)),
+		float(state.get("y", 0.0)),
+		float(state.get("z", 0.0))
+	)
+	_remote_target_positions[user_id] = target
+
+
+func _interpolate_remote_players(delta: float) -> void:
+	for user_id in _remote_players.keys():
+		var node := _remote_players[user_id] as Node3D
+		if node == null:
+			continue
+		var target: Vector3 = _remote_target_positions.get(user_id, node.global_position)
+		node.global_position = node.global_position.lerp(target, clampf(delta * 8.0, 0.0, 1.0))
+
+
+func _sync_remote_users() -> void:
+	if _coop_lobby_id == "":
+		return
+	var users: Array = WavedashSDK.get_lobby_users(_coop_lobby_id)
+	var active_ids: Dictionary = {}
+	for user in users:
+		if user is Dictionary:
+			var u := user as Dictionary
+			var user_id: String = str(u.get("id", u.get("userId", "")))
+			if user_id == "" or user_id == _self_user_id:
+				continue
+			active_ids[user_id] = true
+			if not _remote_players.has(user_id):
+				_spawn_remote_player(user_id, str(u.get("username", u.get("userName", WavedashSDK.get_username(user_id)))))
+
+	var to_remove: Array = []
+	for existing_id in _remote_players.keys():
+		if not active_ids.has(existing_id):
+			to_remove.append(existing_id)
+	for remove_id in to_remove:
+		_remove_remote_player(str(remove_id))
+
+
+func _spawn_remote_player(user_id: String, username: String) -> void:
+	if _remote_root == null:
+		return
+	var avatar := Node3D.new()
+	avatar.name = "remote_" + user_id
+	_remote_root.add_child(avatar)
+
+	var mesh := MeshInstance3D.new()
+	var sphere := SphereMesh.new()
+	sphere.radius = 0.25
+	sphere.height = 0.5
+	mesh.mesh = sphere
+	avatar.add_child(mesh)
+
+	var label := Label3D.new()
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.position = Vector3(0.0, 1.0, 0.0)
+	label.text = username if username != "" else "remote"
+	label.font_size = 44
+	label.outline_size = 20
+	avatar.add_child(label)
+
+	_remote_players[user_id] = avatar
+	_remote_target_positions[user_id] = avatar.global_position
+
+
+func _remove_remote_player(user_id: String) -> void:
+	if not _remote_players.has(user_id):
+		return
+	var node := _remote_players[user_id] as Node3D
+	_remote_players.erase(user_id)
+	_remote_target_positions.erase(user_id)
+	if node != null:
+		node.queue_free()
+
+
+func _on_lobby_users_updated(_payload: Dictionary) -> void:
+	_sync_remote_users()
+
+
+func _on_lobby_left(_payload: Dictionary) -> void:
+	_coop_active = false
+
+
+func _on_lobby_kicked(_payload: Dictionary) -> void:
+	_coop_active = false
