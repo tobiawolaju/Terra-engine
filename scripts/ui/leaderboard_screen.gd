@@ -16,14 +16,16 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if ScreenFader.is_transitioning():
+		return
 	if event.is_action_pressed("ui_cancel"):
-		get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+		await ScreenFader.change_scene(MAIN_MENU_SCENE)
 		return
 
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
-			get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+			await ScreenFader.change_scene(MAIN_MENU_SCENE)
 
 
 func _build_ui() -> void:

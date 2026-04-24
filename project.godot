@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 
 WavedashSDK="*uid://xir3yuwkwds2"
 WavedashFlow="*res://scripts/wavedash/wavedash_init.gd"
+ScreenFader="*res://scripts/ui/screen_fader.gd"
 
 [display]
 

@@ -272,4 +272,4 @@ func _run_simulation() -> void:
 
 	await get_tree().create_timer(1.2).timeout
 	if is_inside_tree():
-		get_tree().change_scene_to_file(LEADERBOARD_SCENE)
+		await ScreenFader.change_scene(LEADERBOARD_SCENE)
