@@ -3,6 +3,9 @@ extends CharacterBody3D
 const GRAVITY: float = 12.0
 const JUMP_VELOCITY: float = 9.8 
 const SPEED: float = 12.0
+const LEAP_INTERVAL_SECONDS: float = 2.0
+const LEAP_VELOCITY: float = 1.6
+const LEAP_MOVE_THRESHOLD: float = 0.1
 
 @export var camera: Camera3D
 @export var hold_anchor: Node3D
@@ -32,6 +35,7 @@ var cam_rot_y: float = 0.0
 var current_animation: String = "idle"
 var _held_pickable: Pickable
 var _pick_action_available: bool = false
+var _leap_cooldown_seconds: float = 0.0
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -72,6 +76,8 @@ func _mouse_over_joystick(mouse_pos: Vector2) -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	_leap_cooldown_seconds = maxf(_leap_cooldown_seconds - delta, 0.0)
+
 	if _pick_action_available and Input.is_action_just_pressed("pick"):
 		_toggle_pickup()
 
@@ -113,11 +119,26 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = move_direction.x * SPEED * speed_multiplier
 	velocity.z = move_direction.z * SPEED * speed_multiplier
+	_try_leap_assist(move_direction)
 	move_and_slide()
 
 	_update_armature_facing(move_direction, delta)
 	_update_camera(delta)
 	_handle_animations(move_direction, is_in_water)
+
+
+func _try_leap_assist(move_direction: Vector3) -> void:
+	if move_direction.length() < LEAP_MOVE_THRESHOLD:
+		return
+	if not is_on_floor():
+		return
+	if _leap_cooldown_seconds > 0.0:
+		return
+	if velocity.y > LEAP_VELOCITY:
+		return
+
+	velocity.y = maxf(velocity.y, LEAP_VELOCITY)
+	_leap_cooldown_seconds = LEAP_INTERVAL_SECONDS
 
 
 func _update_camera(delta: float) -> void:

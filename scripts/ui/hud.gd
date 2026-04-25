@@ -20,6 +20,8 @@ var _mouse_drag_active: bool = false
 var _knob_direction: Vector2 = Vector2.ZERO
 var _base_center: Vector2 = Vector2.ZERO
 var _max_offset: float = 0.0
+var _elapsed_seconds: int = 0
+var _elapsed_timer: Timer
 
 
 func _ready() -> void:
@@ -31,6 +33,12 @@ func _ready() -> void:
 	_reset_joystick()
 	set_username("...")
 	set_elapsed_time(0)
+	_start_elapsed_timer()
+
+
+func _exit_tree() -> void:
+	if _elapsed_timer != null and is_instance_valid(_elapsed_timer):
+		_elapsed_timer.stop()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -176,16 +184,31 @@ func set_username(username: String) -> void:
 	username_label.text = "Player: " + username
 
 
-func set_elapsed_time(seconds: int, target_seconds: int = -1) -> void:
+func set_elapsed_time(seconds: int, _target_seconds: int = -1) -> void:
 	if score_label == null:
 		return
-	if target_seconds > 0:
-		score_label.text = "Time: %ss / %ss" % [seconds, target_seconds]
-	else:
-		score_label.text = "Time: %ss" % seconds
+	_elapsed_seconds = max(seconds, 0)
+	score_label.text = "%d sec Alive" % _elapsed_seconds
 
 
 func set_score_text(text: String) -> void:
 	if score_label == null:
 		return
 	score_label.text = text
+
+
+func _start_elapsed_timer() -> void:
+	if _elapsed_timer != null and is_instance_valid(_elapsed_timer):
+		return
+
+	_elapsed_timer = Timer.new()
+	_elapsed_timer.wait_time = 1.0
+	_elapsed_timer.one_shot = false
+	_elapsed_timer.autostart = false
+	_elapsed_timer.timeout.connect(_on_elapsed_timer_timeout)
+	add_child(_elapsed_timer)
+	_elapsed_timer.start()
+
+
+func _on_elapsed_timer_timeout() -> void:
+	set_elapsed_time(_elapsed_seconds + 1)

@@ -1,23 +1,31 @@
 [gd_scene format=3 uid="uid://bnkul67drvdmr"]
 
 [ext_resource type="Script" uid="uid://5eqg8534mk21" path="res://scripts/ui/hud.gd" id="1_hudgd"]
+[ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_fls4u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qpvh6"]
-bg_color = Color(1, 1, 1, 0.5137255)
+bg_color = Color(0, 0, 0, 0.11764706)
+corner_radius_top_left = 200
+corner_radius_top_right = 200
+corner_radius_bottom_right = 200
+corner_radius_bottom_left = 200
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7hsmw"]
+bg_color = Color(0, 0, 0, 0.05882353)
 corner_radius_top_left = 200
 corner_radius_top_right = 200
 corner_radius_bottom_right = 200
 corner_radius_bottom_left = 200
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fls4u"]
-bg_color = Color(1, 1, 1, 0.23529412)
+bg_color = Color(0, 0, 0, 0.11764706)
 corner_radius_top_left = 50
 corner_radius_top_right = 50
 corner_radius_bottom_right = 50
 corner_radius_bottom_left = 50
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1etfg"]
-bg_color = Color(0.6, 0.2784314, 0.9411765, 1)
+bg_color = Color(0, 0.60749984, 0.51842284, 1)
 corner_radius_top_left = 50
 corner_radius_top_right = 50
 corner_radius_bottom_right = 50
@@ -31,22 +39,25 @@ script = ExtResource("1_hudgd")
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -84.5
-offset_right = 84.5
-offset_bottom = 55.0
+offset_left = -169.5
+offset_right = 169.5
+offset_bottom = 89.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 40
-text = "Time Elaps"
+theme_override_colors/font_outline_color = Color(0.6431373, 0.6431373, 0.6431373, 0.6392157)
+theme_override_constants/outline_size = 20
+theme_override_fonts/font = ExtResource("2_fls4u")
+theme_override_font_sizes/font_size = 60
+text = "10 sec Alive "
 
 [node name="JoyBase" type="Panel" parent="." unique_id=92024574]
 custom_minimum_size = Vector2(220, 220)
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 90.0
-offset_top = -317.0
-offset_right = 310.0
-offset_bottom = -97.0
+offset_left = 71.0
+offset_top = -285.0
+offset_right = 291.0
+offset_bottom = -65.0
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
 
@@ -66,22 +77,22 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -261.0
-offset_top = -266.0
-offset_right = -104.0
-offset_bottom = -103.0
+offset_left = -245.0
+offset_top = -249.0
+offset_right = -130.0
+offset_bottom = -135.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7hsmw")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=204206488]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -211.0
-offset_top = 61.0
+offset_top = 98.0
 offset_right = 216.0
-offset_bottom = 88.0
+offset_bottom = 121.0
 grow_horizontal = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_fls4u")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1etfg")

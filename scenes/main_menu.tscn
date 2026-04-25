@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dtrbeqj8cyhx5"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_bqqt6"]
+[ext_resource type="Script" uid="uid://cthovsw845ers" path="res://scripts/ui/ui_hover_focus_anim.gd" id="3_bqqt6"]
 [ext_resource type="Script" uid="uid://cl1ejphg8ne5v" path="res://scripts/ui/main_menu.gd" id="3_menu"]
 
 [node name="MainMenu" type="Node2D" unique_id=104621629]
@@ -21,16 +22,36 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -112.0
-offset_top = -68.5
+offset_left = -232.0
+offset_top = -128.0
 offset_right = 112.0
-offset_bottom = 31.5
+offset_bottom = -37.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 100
+theme_override_font_sizes/font_size = 75
 text = "Play"
+script = ExtResource("3_bqqt6")
+
+[node name="credits" type="Label" parent="CanvasLayer" unique_id=1803085847]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -228.0
+offset_top = -38.0
+offset_right = 227.5
+offset_bottom = 38.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 75
+text = "Field Notes"
+script = ExtResource("3_bqqt6")
 
 [node name="leaderboard" type="Label" parent="CanvasLayer" unique_id=1268963254]
 anchors_preset = 8
@@ -38,16 +59,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -236.5
-offset_top = 59.0
-offset_right = 236.5
-offset_bottom = 135.0
+offset_left = -234.0
+offset_top = 39.0
+offset_right = 239.0
+offset_bottom = 115.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 75
 text = "leaderboard"
+script = ExtResource("3_bqqt6")
 
 [node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
 anchors_preset = 2

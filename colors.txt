@@ -1,0 +1,9 @@
+
+sky bad : ffd586
+sky normal: c8ddfd
+
+groud bad : 2b2b2b
+groud normal : 477725
+
+water bad : a35706c0
+water normal: 5644ffc0

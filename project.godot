@@ -23,6 +23,7 @@ WavedashSDK="*uid://xir3yuwkwds2"
 WavedashFlow="*res://scripts/wavedash/wavedash_init.gd"
 ScreenFader="*res://scripts/ui/screen_fader.gd"
 Resolution="*uid://c4u8chdmltjtw"
+UIScaleForce="*res://scripts/meta/ui_scale_force.gd"
 
 [display]
 
