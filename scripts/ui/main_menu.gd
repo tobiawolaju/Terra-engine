@@ -31,7 +31,7 @@ func _input(event: InputEvent) -> void:
 
 	var cursor_pos: Vector2 = get_viewport().get_mouse_position()
 	if _solo_label != null and _solo_label.get_global_rect().has_point(cursor_pos):
-		await ScreenFader.change_scene(GAMEPLAY_SCENE)
+		await ScreenFader.change_scene_with_loading(GAMEPLAY_SCENE)
 	elif _leaderboard_label != null and _leaderboard_label.get_global_rect().has_point(cursor_pos):
 		await ScreenFader.change_scene(LEADERBOARD_SCENE)
 
