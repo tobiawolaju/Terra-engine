@@ -22,6 +22,7 @@ config/icon="res://icon.svg"
 WavedashSDK="*uid://xir3yuwkwds2"
 WavedashFlow="*res://scripts/wavedash/wavedash_init.gd"
 ScreenFader="*res://scripts/ui/screen_fader.gd"
+Resolution="*uid://c4u8chdmltjtw"
 
 [display]
 
@@ -74,3 +75,4 @@ pointing/emulate_touch_from_mouse=true
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

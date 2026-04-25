@@ -17,6 +17,7 @@ var _spawned_berries: Array[WeakRef] = []
 
 
 func _ready() -> void:
+	Resolution.apply_quality_preset("performance")
 	_rng.randomize()
 	_spawn_timer = Timer.new()
 	_spawn_timer.one_shot = false

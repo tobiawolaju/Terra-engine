@@ -9,14 +9,23 @@ corner_radius_top_right = 200
 corner_radius_bottom_right = 200
 corner_radius_bottom_left = 200
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fls4u"]
+bg_color = Color(1, 1, 1, 0.23529412)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1etfg"]
+bg_color = Color(0.6, 0.2784314, 0.9411765, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+corner_detail = 20
+
 [node name="HUD" type="CanvasLayer" unique_id=931545357]
 script = ExtResource("1_hudgd")
-
-[node name="Username" type="Label" parent="." unique_id=496182167]
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 40
-text = "Username"
 
 [node name="Score" type="Label" parent="." unique_id=1868815056]
 anchors_preset = 5
@@ -29,25 +38,15 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 40
 text = "Time Elaps"
 
-[node name="Elixa" type="Label" parent="." unique_id=904357358]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -169.0
-offset_bottom = 55.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 40
-text = "Elixa 100"
-
 [node name="JoyBase" type="Panel" parent="." unique_id=92024574]
 custom_minimum_size = Vector2(220, 220)
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -224.0
-offset_right = 244.0
-offset_bottom = -24.0
+offset_left = 90.0
+offset_top = -317.0
+offset_right = 310.0
+offset_bottom = -97.0
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
 
@@ -67,10 +66,23 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -161.0
-offset_top = -168.0
-offset_right = -81.0
-offset_bottom = -88.0
+offset_left = -261.0
+offset_top = -266.0
+offset_right = -104.0
+offset_bottom = -103.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=204206488]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -211.0
+offset_top = 61.0
+offset_right = 216.0
+offset_bottom = 88.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_fls4u")
+theme_override_styles/fill = SubResource("StyleBoxFlat_1etfg")
+value = 70.0
