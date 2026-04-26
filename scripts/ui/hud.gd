@@ -197,6 +197,10 @@ func set_score_text(text: String) -> void:
 	score_label.text = text
 
 
+func get_elapsed_seconds() -> int:
+	return _elapsed_seconds
+
+
 func _start_elapsed_timer() -> void:
 	if _elapsed_timer != null and is_instance_valid(_elapsed_timer):
 		return

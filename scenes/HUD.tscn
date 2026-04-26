@@ -19,6 +19,10 @@ corner_radius_bottom_left = 200
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fls4u"]
 bg_color = Color(0, 0, 0, 0.11764706)
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 0.5019608)
 corner_radius_top_left = 50
 corner_radius_top_right = 50
 corner_radius_bottom_right = 50
@@ -97,3 +101,12 @@ grow_horizontal = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_fls4u")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1etfg")
 value = 70.0
+
+[node name="Label" type="Label" parent="ProgressBar" unique_id=1469763772]
+layout_mode = 0
+offset_left = 329.59995
+offset_top = 7.0
+offset_right = 432.59995
+offset_bottom = 33.25
+scale = Vector2(0.8, 0.8)
+text = "Oxygen Level"

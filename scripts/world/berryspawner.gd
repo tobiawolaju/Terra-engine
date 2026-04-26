@@ -6,11 +6,14 @@ extends Node
 @export var min_berry_scale: float = 1.0
 @export var max_berry_scale: float = 3.0
 @export var progress_2d: ProgressBar
-@export var world_environment_path: NodePath = NodePath("WorldEnvironment")
+@export var player_controller_path: NodePath = NodePath("player/CharacterBody3D")
+@export var deadalien_path: NodePath = NodePath("deadalien")
+@export var directional_light_path: NodePath = NodePath("WorldEnvironment2/DirectionalLight3D")
 @export var ground_mesh_path: NodePath = NodePath("ground/hill/hillmesh")
 @export var water_mesh_path: NodePath = NodePath("berrylake/water")
 @export var lake_surface_y: float = 0.0
 @export var destroy_after_seconds: float = 5.0
+@export var deadalien_oxygen_reward: float = 45.0
 @export var lake_label_path: NodePath = NodePath("berrylake/water/Label3D")
 @export var spawn_point_1: Node3D
 @export var spawn_point_2: Node3D
@@ -24,13 +27,17 @@ var _oxygen_timer: Timer
 var _spawned_berries: Array[WeakRef] = []
 var _underwater_since: Dictionary = {}
 var _lake_label: Label3D
-var _world_environment: WorldEnvironment
+var _directional_light: DirectionalLight3D
 var _ground_mesh: MeshInstance3D
 var _water_mesh: MeshInstance3D
+var _player_controller: Node
+var _deadalien: Node3D
+var _deadalien_consumed: bool = false
+var _death_triggered: bool = false
 var oxygen_level: float = 50.0
 
-const SKY_BAD: Color = Color("ffd586")
-const SKY_NORMAL: Color = Color("c8ddfd")
+const LIGHT_GOOD: Color = Color("efee78")
+const LIGHT_BAD: Color = Color("ef5178")
 const GROUND_BAD: Color = Color("2b2b2b")
 const GROUND_NORMAL: Color = Color("477725")
 const WATER_BAD: Color = Color("a35706c0")
@@ -43,9 +50,11 @@ func _ready() -> void:
 	Resolution.apply_quality_preset("performance")
 	_rng.randomize()
 	_lake_label = get_node_or_null(lake_label_path) as Label3D
-	_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
+	_directional_light = get_node_or_null(directional_light_path) as DirectionalLight3D
 	_ground_mesh = get_node_or_null(ground_mesh_path) as MeshInstance3D
 	_water_mesh = get_node_or_null(water_mesh_path) as MeshInstance3D
+	_player_controller = get_node_or_null(player_controller_path)
+	_deadalien = get_node_or_null(deadalien_path) as Node3D
 	if progress_2d == null:
 		progress_2d = get_node_or_null("HUD/ProgressBar") as ProgressBar
 	_spawn_timer = Timer.new()
@@ -154,11 +163,41 @@ func _handle_lake_logic() -> void:
 		else:
 			_underwater_since.erase(berry_id)
 
+	underwater_count += _handle_deadalien_lake_logic(now_seconds, alive_ids)
+
 	for berry_id: Variant in _underwater_since.keys():
 		if not alive_ids.has(berry_id):
 			_underwater_since.erase(berry_id)
 
 	_update_lake_label(underwater_count)
+
+
+func _handle_deadalien_lake_logic(now_seconds: float, alive_ids: Dictionary) -> int:
+	if _deadalien_consumed:
+		return 0
+	if _deadalien == null or not is_instance_valid(_deadalien):
+		_deadalien = get_node_or_null(deadalien_path) as Node3D
+	if _deadalien == null or not is_instance_valid(_deadalien):
+		return 0
+
+	var deadalien_id: int = _deadalien.get_instance_id()
+	alive_ids[deadalien_id] = true
+
+	if _deadalien.global_position.y < lake_surface_y:
+		if not _underwater_since.has(deadalien_id):
+			_underwater_since[deadalien_id] = now_seconds
+
+		var underwater_duration: float = now_seconds - float(_underwater_since[deadalien_id])
+		if underwater_duration >= maxf(destroy_after_seconds, 0.0):
+			_add_oxygen(deadalien_oxygen_reward)
+			_deadalien.queue_free()
+			_underwater_since.erase(deadalien_id)
+			_deadalien_consumed = true
+			return 0
+		return 1
+	else:
+		_underwater_since.erase(deadalien_id)
+		return 0
 
 
 func _update_lake_label(underwater_count: int) -> void:
@@ -178,6 +217,19 @@ func _add_oxygen(delta_amount: float) -> void:
 	oxygen_level = clampf(oxygen_level + delta_amount, 0.0, 100.0)
 	_apply_oxygen_to_progress()
 
+	if oxygen_level <= 0.0 and not _death_triggered:
+		_death_triggered = true
+		_trigger_player_death()
+
+
+func _trigger_player_death() -> void:
+	if _player_controller == null:
+		_player_controller = get_node_or_null(player_controller_path)
+	if _player_controller == null:
+		return
+	if _player_controller.has_method("set_dead_state"):
+		_player_controller.call("set_dead_state", true)
+
 
 func _apply_oxygen_to_progress() -> void:
 	if progress_2d != null:
@@ -190,20 +242,21 @@ func _apply_oxygen_to_progress() -> void:
 
 func _apply_oxygen_visuals() -> void:
 	var badness: float = clampf((50.0 - oxygen_level) / 50.0, 0.0, 1.0)
-	var sky_color: Color = SKY_NORMAL.lerp(SKY_BAD, badness)
+	var light_color: Color = LIGHT_GOOD.lerp(LIGHT_BAD, badness)
 	var ground_color: Color = GROUND_NORMAL.lerp(GROUND_BAD, badness)
 	var water_color: Color = WATER_NORMAL.lerp(WATER_BAD, badness)
 
-	_apply_sky_color(sky_color)
+	_apply_directional_light_color(light_color)
 	_apply_mesh_albedo(_ground_mesh, ground_color)
 	_apply_mesh_albedo(_water_mesh, water_color)
 
 
-func _apply_sky_color(sky_color: Color) -> void:
-	if _world_environment == null or _world_environment.environment == null:
+func _apply_directional_light_color(light_color: Color) -> void:
+	if _directional_light == null:
+		_directional_light = get_node_or_null(directional_light_path) as DirectionalLight3D
+	if _directional_light == null:
 		return
-	_world_environment.environment.background_mode = Environment.BG_COLOR
-	_world_environment.environment.background_color = sky_color
+	_directional_light.light_color = light_color
 
 
 func _apply_mesh_albedo(mesh_node: MeshInstance3D, color_value: Color) -> void:

@@ -1,5 +1,26 @@
 [gd_scene format=3 uid="uid://ditg2fnu71m3u"]
 
+[ext_resource type="Texture2D" uid="uid://dj2asw65egpvw" path="res://blender/allassets_Image_0_3.png" id="2_dhqfv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc7uc"]
+bg_color = Color(0, 0, 0, 0.11764706)
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 0.5019608)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
+bg_color = Color(0, 0.60749984, 0.51842284, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+corner_detail = 20
+
 [node name="Loading" type="Control" unique_id=1057401283]
 layout_mode = 3
 anchors_preset = 15
@@ -10,11 +31,31 @@ grow_vertical = 2
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=649390560]
 layout_mode = 0
-offset_left = -3630.0
-offset_top = -3809.0
-offset_right = 4861.0
-offset_bottom = 4523.0
-color = Color(0.5019608, 0.8, 0.19607843, 1)
+offset_left = -3643.0
+offset_top = -3723.0
+offset_right = 4848.0
+offset_bottom = 4609.0
+color = Color(0, 0, 0, 1)
+
+[node name="Container" type="Container" parent="." unique_id=255241464]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sprite2D2" type="Sprite2D" parent="Container" unique_id=90421222]
+position = Vector2(22.000023, 15.999992)
+scale = Vector2(1.6015627, 0.78515625)
+skew = 0.17453292
+texture = ExtResource("2_dhqfv")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=837535864]
 layout_mode = 1
@@ -29,3 +70,5 @@ offset_right = 501.5
 offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_yc7uc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ir5ef")
