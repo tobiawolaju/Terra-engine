@@ -1,304 +1,151 @@
-# 🌍 Terra Engine
+# Terra Engineer
 
-> *A Terraformer received coordinates and landed. The planet wasn't on the manifest. No atmosphere processor. No water cycle. Just dying soil and a chute they built themselves. They kept it alive as long as they could. They documented everything. Then the air ran out.*
->
-> *You got the same coordinates. You found their notes. Now it's your shift.*
+Terraforming survival game built for **Gamedev.js Jam 2026** (theme: **Machines**), and submitted to the **Open Source track**.
 
----
+> The last Terraformer left no manual.
+>  
+> Just a body, a lake, and a machine that only works if you keep feeding it.
+>  
+> You are not here to win. You are here to hold the system together for one more minute.
 
-## What Is Terra Engine?
+You are dropped on a failing planet with one job: keep oxygen alive for as long as possible.
 
-Terra Engine is a 3D survival game built for the **Gamedev.js Jam 2026** under the theme **"Machines."**
+## Jam Submission Snapshot
 
-You are a Terraformer — a professional planet cultivator — who has crash-landed on the wrong planet. The Terraformer before you built a system to keep the planet alive. They still died. You inherited their machine. Your job is simple: keep the biological engine running until rescue arrives.
+- Jam: `Gamedev.js Jam 2026`
+- Theme: `Machines`
+- Engine: `Godot 4.6.x`
+- Platform: `Web (HTML5 export)`
+- Track: `Open Source`
 
-Rescue never comes for one person. But it might come for ten.
+## Field Note
 
----
+This was built fast, under jam pressure, with a simple design rule:
+- If the machine is starving, the world should show it.
+- If the player fails, the system should remember it.
+- If the player survives longer, it should mean something.
 
-## Core Concept
+## What Is Implemented Right Now
 
-The planet is the machine. It has inputs, outputs, and a decay rate. Feed it or it dies. You die with it.
+This README reflects what is currently wired in the project.
 
-No HUD health bars. The planet shows its own health:
+### Core Survival Loop
 
-| Berries in Lake | Visual State | Planet Effect |
-|---|---|---|
-| 0 | Cracked dust | Plants dying fast |
-| 1 | Chalky residue | Plants dying slow |
-| 2–4 | Blue goo | Plants surviving |
-| 5–9 | Shallow shimmer | Plants growing |
-| 10+ | Deep blue waves | Planet thriving |
+1. Oxygen starts at `50`.
+2. Oxygen drains by `2` every `5` seconds.
+3. Berries spawn around the map.
+4. Carry berries and drop them into the lake.
+5. A berry that stays underwater for `5` seconds is consumed and gives `+10` oxygen.
+6. If oxygen reaches `0`, game over triggers and your survival time is submitted to the leaderboard.
 
----
-
-## Gameplay
-
-### The Loop
-```
-Climb to berry field → Carry berry → Drop in chute → Berry slides to lake
-                                                            ↓
-                                                     Lake stays alive
-                                                            ↓
-                                                      Air stays clean
-                                                            ↓
-                                                       You stay alive
-```
+There is also one extra risk/reward object:
+- A dead alien body can be pushed into the lake for a one-time `+45` oxygen bonus.
 
 ### Player Mechanics
-- **Stamina bar** — drains while moving, refills while standing still
-- **Half speed** when carrying any item
-- **One item** carried at a time
-- **Boulders** wipe stamina to zero and knock you sideways
-- Drop item on boulder hit — walk back and recover it
 
-### World Layout
-```
-[ HILLTOPS ]     ← berry trees, boulder spawn zone
-[ MIDSLOPE ]     ← plants, seed zones, danger area
-[ FLATLAND ]     ← player base, chute entrance
-[ LAKESIDE ]     ← delivery destination, relative safety
-[ EDGE     ]     ← boulders fall off the planet here
-```
+- Third-person movement with camera-relative controls.
+- Jumping.
+- Water movement slowdown (50% speed).
+- Pick up and carry one nearby physics object at a time.
+- Drop held object on command.
+- Auto leap-assist while moving on ground (small periodic hop).
+- Death state with orbiting camera and death overlay.
 
-### Tasks
-- **Carry berries** from hilltop to chute to feed the lake
-- **Carry water** manually to plants on the slope
-- **Spread seeds** anywhere on flatland to grow new plants
-- **Convert pits** into new lakes to expand survivable area
-- **Dodge boulders** rolling from hilltops at increasing frequency
+### UI and Flow
 
----
+- Splash scene -> main menu.
+- Main menu `Play` starts gameplay with a loading transition.
+- Main menu `Leaderboard` opens the online leaderboard screen.
+- HUD shows player username, time alive (seconds), touch joystick controls, and oxygen bar state.
+- Death overlay shows final time alive.
 
-## World Lore
+### Online (Wavedash)
 
-### The Terraformer Before You
-When you land you find:
-- A **dead alien suit** near the landing zone — no dialogue, just presence
-- A **signboard** with pictogram instructions — field notes from a professional who knew they were running out of time
-- **The Chute** — a pre-built delivery system. Drop berries in. They slide to the lake. This is the machine. This is the theme.
+- Fetches current username.
+- Posts survival score to leaderboard id: `survival_time`.
+- Reads top leaderboard entries for leaderboard scene.
 
-### The Berry Field
-At the hilltop the berry field pulses **RGB visuals** when full. Beautiful. Dangerous. Boulders spawn here.
+## Controls
 
----
-
-## Easter Eggs
-
-**The Rescue** — triggered when enough players sustain the planet long enough. We will never announce the conditions.
-
-**The Statue** — the first group to trigger rescue gets permanent statues on the planet. Every solo player after sees them and wonders.
-
-**The Tombstone Wall** — every dead player leaves a grave at their death location with their survival time. Permanent. Forever.
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Engine | Godot 4 |
-| Export | HTML5 (WebGL) |
-| Language | GDScript |
-| 3D Assets | Low poly, CC BY licensed (GLTF 2.0) |
-| Platform SDK | Wavedash SDK (GDScript addon) |
-| Leaderboard | Wavedash Leaderboards API |
-| Cloud Saves | Wavedash Cloud Saves API |
-| Deployment | Wavedash + Itch.io |
-
----
+- Move: `W A S D`
+- Jump: `Space`
+- Pick/Drop item: `P`
+- Orbit camera: hold left mouse button + move mouse
+- Zoom: mouse wheel
+- Menu selections: left click
 
 ## Project Structure
 
+```text
+scenes/
+  splash.tscn
+  main_menu.tscn
+  loading.tscn
+  gameplay.tscn
+  leaderboard.tscn
+  overlays/death_overlay.tscn
+  HUD.tscn
+
+scripts/
+  player/player_controller.gd
+  world/berryspawner.gd
+  world/pickable.gd
+  world/peashooter.gd
+  ui/hud.gd
+  ui/main_menu.gd
+  ui/leaderboard_screen.gd
+  ui/splash.gd
+  ui/screen_fader.gd
+  ui/loading_overlay.gd
+  wavedash/wavedash_init.gd
 ```
-terra-engine/
-│
-├── wavedash.toml                        ← Wavedash config (game_id + export path)
-├── project.godot
-├── README.md
-├── DEVNOTE.md
-│
-├── addons/
-│   └── wavedash/                        ← Wavedash GDScript SDK (drop in from GitHub)
-│       └── WavedashSDK.gd               ← Registered as Autoload, listed FIRST
-│
-├── exports/
-│   └── web/                             ← HTML5 export output — wavedash.toml points here
-│
-├── scenes/
-│   ├── splash.tscn                      ← Logo, planet breathing animation
-│   ├── profile_setup.tscn               ← First time only — username or X handle
-│   ├── main_menu.tscn                   ← Play, Leaderboard
-│   ├── loading.tscn                     ← Lore text while assets load
-│   ├── gameplay.tscn                    ← Main 3D world scene
-│   ├── leaderboard.tscn                 ← All time, today, personal best via Wavedash
-│   └── overlays/
-│       ├── pause_menu.tscn              ← Resume, Save and Exit, Settings
-│       └── death_overlay.tscn           ← Survival time + tombstone placement animation
-│
-├── scripts/
-│   ├── player/
-│   │   ├── player_controller.gd         ← Movement, input, carrying logic
-│   │   ├── stamina_system.gd            ← Drain on move, refill on idle, zero on boulder
-│   │   └── inventory.gd                 ← One item at a time, drop on hit
-│   │
-│   ├── world/
-│   │   ├── lake_system.gd               ← Berry count → visual state → planet health
-│   │   ├── boulder_spawner.gd           ← Random timing, frequency tied to lake size
-│   │   ├── plant_system.gd              ← Water dependency, seed spreading, decay
-│   │   ├── chute.gd                     ← Receives berry, routes to nearest lake
-│   │   └── pit_converter.gd             ← Converts pit into new lake on interaction
-│   │
-│   ├── meta/
-│   │   ├── tombstone_manager.gd         ← Place grave on death, persist to all sessions
-│   │   ├── leaderboard.gd               ← Posts score via WavedashSDK.post_leaderboard_score
-│   │   ├── cloud_save.gd                ← Saves planet state via Wavedash Cloud Saves
-│   │   └── rescue_timer.gd              ← 👀
-│   │
-│   ├── wavedash/
-│   │   ├── wavedash_init.gd             ← Calls WavedashSDK.init() on game ready
-│   │   ├── wavedash_identity.gd         ← WavedashSDK.get_username() → profile setup
-│   │   └── wavedash_leaderboard.gd      ← Post + fetch survival time scores
-│   │
-│   └── ui/
-│       ├── hud.gd                       ← Stamina bar, carried item icon, session timer
-│       └── death_overlay.gd             ← Reads survival time, triggers tombstone drop
-│
-├── assets/
-│   ├── models/                          ← GLTF exports from Blender, CC BY licensed
-│   │   ├── player.glb
-│   │   ├── dead_suit.glb
-│   │   ├── berry.glb
-│   │   ├── boulder.glb
-│   │   ├── chute.glb
-│   │   ├── signboard.glb
-│   │   └── tombstone.glb
-│   │
-│   ├── textures/
-│   ├── shaders/
-│   │   ├── lake.gdshader                ← Color + displacement tied to berry count
-│   │   └── berry_field_rgb.gdshader     ← RGB pulse when field is full
-│   │
-│   ├── audio/
-│   │   ├── ambient/                     ← Planet hum, wind
-│   │   └── sfx/                         ← Berry drop, boulder roll, stamina low
-│   │
-│   └── CREDITS.md                       ← All CC BY asset attributions listed here
-│
-└── LICENSE
-```
+
+## Run Locally (Godot)
+
+1. Open `project.godot` in Godot 4.6.x.
+2. Run the default scene (splash).
+3. Play from menu.
+
+## Export Web Build
+
+`export_presets.cfg` is already set up for Web export to:
+
+- `Builds/index.html`
+
+Current repo also contains ready web export folders:
+- `Builds/`
+- `ItichIO/`
+
+## Why This Fits The Theme "Machines"
+
+The planet is treated like a machine with:
+- Inputs (berries and biomass).
+- Decay (oxygen drain).
+- Observable output (HUD + world color shifts).
+- Failure condition (oxygen collapse).
+
+Your job is to keep the system running under pressure.
+
+## Jam Intent
+
+Most survival games ask you to protect yourself.
+This one asks you to maintain a living system that is already failing.
+
+You are the maintenance worker, the fuel line, and the last backup process.
+Keep it running until it breaks, or until you do.
+
+## Open Source Track Notes
+
+- Full source code is included.
+- Gameplay logic is readable in GDScript (see `scripts/world/berryspawner.gd` and `scripts/player/player_controller.gd`).
+- Web export settings are included for reproducible builds.
+
+## Credits
+
+- See `assets/CREDITS.md` for asset attributions.
 
 ---
 
-## Wavedash Integration
-
-### Setup
-```bash
-# 1. Download SDK from https://github.com/wvdsh/sdk-godot
-# Place folder at res://addons/wavedash/
-
-# 2. Register Autoload
-# Project > Project Settings > Autoload
-# Add WavedashSDK.gd as "WavedashSDK"
-# IMPORTANT: Must be FIRST in autoload list
-
-# 3. Export HTML5
-# Project > Export > Web
-# Enable Threads support
-# Export output to ./exports/web/
-```
-
-### wavedash.toml
-```toml
-game_id = "YOUR_GAME_ID_HERE"
-upload_dir = "./exports/web"
-
-[godot]
-version = "4.5-stable"
-```
-
-### SDK Usage in Terra Engine
-```gdscript
-# wavedash_init.gd — runs on game start
-func _ready():
-    WavedashSDK.backend_connected.connect(_on_connected)
-    WavedashSDK.init({"debug": true})
-    WavedashSDK.ready_for_events()
-
-func _on_connected(_payload):
-    print("Playing as: ", WavedashSDK.get_username())
-
-# leaderboard.gd — posts survival time on death
-func post_survival_time(seconds: int):
-    var response = await WavedashSDK.post_leaderboard_score(
-        "survival_time",
-        seconds,
-        true
-    )
-    if response.success:
-        print("Leaderboard rank: ", response.data.globalRank)
-```
-
-### What Wavedash Handles For You
-- Player identity and username
-- Leaderboard (survival time scores)
-- Cloud saves (planet state persistence)
-
----
-
-## Deploy to Wavedash
-
-```bash
-# Install Wavedash CLI
-npm install -g @wavedash/cli
-
-# Authenticate
-wavedash login
-
-# Deploy
-wavedash upload
-wavedash publish
-```
-
----
-
-## Running Locally
-
-```bash
-git clone https://github.com/tobiawolaju/terra-engine
-cd terra-engine
-
-# Open in Godot 4
-# File → Open Project → select project.godot
-
-# Export HTML5
-# Project → Export → Web → Export Project → ./exports/web/
-```
-
----
-
-## Asset Credits
-
-All 3D assets used under Creative Commons CC BY 4.0 license.
-Full credits in `/assets/CREDITS.md`
-
----
-
-## Jam Submission
-
-- **Jam:** Gamedev.js Jam 2026
-- **Theme:** Machines
-- **Challenges:** Deploy to Wavedash · Open Source by GitHub · YouTube Playables
-- **Submitted by:** [@tobiawolaju](https://github.com/tobiawolaju)
-
----
-
-## License
-
-MIT — see `LICENSE` for details.
-
-Open source. Read the code. The answers are in there.
-
----
-
-*Built in 2 days. Dedicated to every Terraformer who didn't make it.*
+Built in jam time.
+Made for the Open Source track.
+Kept alive by anyone willing to carry one more berry.
