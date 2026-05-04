@@ -35,7 +35,7 @@ offset_left = -3350.0
 offset_top = -3306.0
 offset_right = 5141.0
 offset_bottom = 5026.0
-color = Color(0, 0, 0, 1)
+color = Color(0.81960785, 0, 0.972549, 1)
 
 [node name="Container" type="Container" parent="." unique_id=255241464]
 layout_mode = 1
@@ -52,7 +52,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Sprite2D2" type="Sprite2D" parent="Container" unique_id=90421222]
-modulate = Color(0.24477637, 0.2447764, 0.24477637, 1)
 position = Vector2(38.5, 7.000003)
 scale = Vector2(0.433846, 0.41378635)
 skew = 0.17453292
