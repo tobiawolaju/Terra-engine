@@ -2,23 +2,24 @@
 
 [ext_resource type="Texture2D" uid="uid://dpc7atg8f4uka" path="res://logo.png" id="1_ir5ef"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
+bg_color = Color(0, 0, 0, 0.3137255)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc7uc"]
-bg_color = Color(0, 0, 0, 0.11764706)
+bg_color = Color(0.5288034, 0.97327954, 0, 1)
+border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color(1, 1, 1, 0.5019608)
-corner_radius_top_left = 50
-corner_radius_top_right = 50
-corner_radius_bottom_right = 50
-corner_radius_bottom_left = 50
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
-bg_color = Color(0, 0.60749984, 0.51842284, 1)
-corner_radius_top_left = 50
-corner_radius_top_right = 50
-corner_radius_bottom_right = 50
-corner_radius_bottom_left = 50
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
 corner_detail = 20
 
 [node name="Loading" type="Control" unique_id=1057401283]
@@ -35,7 +36,6 @@ offset_left = -3350.0
 offset_top = -3306.0
 offset_right = 5141.0
 offset_bottom = 5026.0
-color = Color(0.81960785, 0, 0.972549, 1)
 
 [node name="Container" type="Container" parent="." unique_id=255241464]
 layout_mode = 1
@@ -52,6 +52,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Sprite2D2" type="Sprite2D" parent="Container" unique_id=90421222]
+visible = false
 position = Vector2(38.5, 7.000003)
 scale = Vector2(0.433846, 0.41378635)
 skew = 0.17453292
@@ -70,5 +71,6 @@ offset_right = 501.5
 offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_styles/background = SubResource("StyleBoxFlat_yc7uc")
-theme_override_styles/fill = SubResource("StyleBoxFlat_ir5ef")
+theme_override_styles/background = SubResource("StyleBoxFlat_ir5ef")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yc7uc")
+show_percentage = false

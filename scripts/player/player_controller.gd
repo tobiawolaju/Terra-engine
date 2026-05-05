@@ -4,9 +4,10 @@ const GRAVITY: float = 12.0
 const JUMP_VELOCITY: float = 9.8 
 const SPEED: float = 12.0
 const LEAP_INTERVAL_SECONDS: float = 2.0
-const LEAP_VELOCITY: float = 3.8
+const LEAP_VELOCITY: float = 5.2
 const LEAP_MOVE_THRESHOLD: float = 0.1
 const DEATH_OVERLAY_SCENE_PATH: String = "res://scenes/overlays/death_overlay.tscn"
+const SECONDS_PER_DAY: int = 120
 
 @export var camera: Camera3D
 @export var hold_anchor: Node3D
@@ -259,7 +260,8 @@ func _set_death_overlay_time_spent_label(death_overlay_instance: Node, elapsed_s
 	var time_label: Label = death_overlay_instance.get_node_or_null("CanvasLayer/time-spent") as Label
 	if time_label == null:
 		return
-	time_label.text = "Time spent : %d sec" % max(elapsed_seconds, 0)
+	var days_spent: int = max(elapsed_seconds, 0) / SECONDS_PER_DAY
+	time_label.text = "Days spent : %d" % days_spent
 
 
 func _try_leap_assist(move_direction: Vector3) -> void:

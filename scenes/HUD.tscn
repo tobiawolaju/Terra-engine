@@ -1,57 +1,104 @@
 [gd_scene format=3 uid="uid://bnkul67drvdmr"]
 
 [ext_resource type="Script" uid="uid://5eqg8534mk21" path="res://scripts/ui/hud.gd" id="1_hudgd"]
-[ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_fls4u"]
+[ext_resource type="Texture2D" uid="uid://cpxj34ix5o73y" path="res://assets/textures/lung.png" id="2_1etfg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k4w17"]
+bg_color = Color(1, 1, 1, 0.11764706)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 0.3137255)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qpvh6"]
-bg_color = Color(0, 0, 0, 0.11764706)
-corner_radius_top_left = 200
-corner_radius_top_right = 200
-corner_radius_bottom_right = 200
-corner_radius_bottom_left = 200
+bg_color = Color(1, 1, 1, 0.11764706)
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8cuoo"]
+bg_color = Color(1, 1, 1, 0.5176471)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7hsmw"]
-bg_color = Color(0, 0, 0, 0.05882353)
+bg_color = Color(0, 0, 0, 0.25490198)
 corner_radius_top_left = 200
 corner_radius_top_right = 200
 corner_radius_bottom_right = 200
 corner_radius_bottom_left = 200
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fls4u"]
-bg_color = Color(0, 0, 0, 0.11764706)
+bg_color = Color(0, 0, 0, 0.3137255)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1etfg"]
+bg_color = Color(0.5288034, 0.97327954, 0, 1)
+border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color(1, 1, 1, 0.5019608)
-corner_radius_top_left = 50
-corner_radius_top_right = 50
-corner_radius_bottom_right = 50
-corner_radius_bottom_left = 50
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1etfg"]
-bg_color = Color(0, 0.60749984, 0.51842284, 1)
-corner_radius_top_left = 50
-corner_radius_top_right = 50
-corner_radius_bottom_right = 50
-corner_radius_bottom_left = 50
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
 corner_detail = 20
 
-[node name="HUD" type="CanvasLayer" unique_id=931545357]
-script = ExtResource("1_hudgd")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_twldb"]
+bg_color = Color(1, 1, 1, 0.08235294)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 0.3137255)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
-[node name="Score" type="Label" parent="." unique_id=1868815056]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -169.5
-offset_right = 169.5
-offset_bottom = 89.0
-grow_horizontal = 2
-theme_override_colors/font_outline_color = Color(0.6431373, 0.6431373, 0.6431373, 0.6392157)
-theme_override_constants/outline_size = 20
-theme_override_fonts/font = ExtResource("2_fls4u")
-theme_override_font_sizes/font_size = 60
-text = "10 sec Alive "
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nysna"]
+bg_color = Color(1, 1, 1, 0.40784314)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f6qnu"]
+bg_color = Color(1, 1, 1, 0.08235294)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="HUD" type="CanvasLayer" unique_id=931545357 node_paths=PackedStringArray("score_label")]
+script = ExtResource("1_hudgd")
+pick_button_path = NodePath("pick")
+score_label = NodePath("Label")
+
+[node name="JoyBase2" type="Panel" parent="." unique_id=1086074839]
+custom_minimum_size = Vector2(220, 220)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 71.0
+offset_top = -285.0
+offset_right = 291.0
+offset_bottom = -65.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_k4w17")
 
 [node name="JoyBase" type="Panel" parent="." unique_id=92024574]
 custom_minimum_size = Vector2(220, 220)
@@ -72,9 +119,10 @@ offset_left = 70.0
 offset_top = 70.0
 offset_right = 150.0
 offset_bottom = 150.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_qpvh6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8cuoo")
 
 [node name="Action" type="Panel" parent="." unique_id=1817801479]
+visible = false
 custom_minimum_size = Vector2(80, 80)
 anchors_preset = 3
 anchor_left = 1.0
@@ -90,23 +138,101 @@ grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_7hsmw")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=204206488]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -211.0
-offset_top = 98.0
-offset_right = 216.0
-offset_bottom = 121.0
-grow_horizontal = 2
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -303.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 59.0
+grow_horizontal = 0
 theme_override_styles/background = SubResource("StyleBoxFlat_fls4u")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1etfg")
 value = 70.0
+show_percentage = false
 
-[node name="Label" type="Label" parent="ProgressBar" unique_id=1469763772]
-layout_mode = 0
-offset_left = 329.59995
-offset_top = 7.0
-offset_right = 432.59995
-offset_bottom = 33.25
+[node name="pick2" type="Button" parent="." unique_id=1198510360]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -245.0
+offset_top = -236.0
+offset_right = -107.0
+offset_bottom = -97.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_twldb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nysna")
+theme_override_styles/hover = SubResource("StyleBoxFlat_f6qnu")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_f6qnu")
+theme_override_styles/focus = SubResource("StyleBoxFlat_f6qnu")
+
+[node name="pick" type="Button" parent="." unique_id=30707962]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -245.0
+offset_top = -236.0
+offset_right = -107.0
+offset_bottom = -97.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_f6qnu")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nysna")
+theme_override_styles/hover = SubResource("StyleBoxFlat_f6qnu")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_f6qnu")
+theme_override_styles/focus = SubResource("StyleBoxFlat_f6qnu")
+
+[node name="extra guide" type="Label" parent="pick" unique_id=776686027]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -54.5
+offset_top = -11.5
+offset_right = 54.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "[P] - pick/drop"
+
+[node name="Label" type="Label" parent="." unique_id=1469763772]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -110.599976
+offset_top = 70.99999
+offset_right = -1.0999756
+offset_bottom = 125.99999
+grow_horizontal = 0
 scale = Vector2(0.8, 0.8)
-text = "Oxygen Level"
+theme_override_font_sizes/font_size = 40
+text = "Day 0"
+horizontal_alignment = 2
+
+[node name="analog guide" type="Label" parent="." unique_id=1550305792]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -471.5
+offset_top = 124.5
+offset_right = -318.5
+offset_bottom = 173.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "[Arrow keys] - move
+[spacebar] - jump"
+
+[node name="lung" type="Sprite2D" parent="." unique_id=326105470]
+position = Vector2(869, 39)
+scale = Vector2(0.035, 0.033000004)
+texture = ExtResource("2_1etfg")

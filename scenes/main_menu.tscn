@@ -14,7 +14,7 @@ offset_left = -3630.0
 offset_top = -3809.0
 offset_right = 4861.0
 offset_bottom = 4523.0
-color = Color(0, 0, 0, 1)
+color = Color(0.4509804, 0.9254902, 0.3882353, 1)
 
 [node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
 anchors_preset = 8
@@ -80,7 +80,6 @@ offset_top = -37.0
 offset_right = 141.0
 offset_bottom = -11.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.5019608, 0.8, 0.19607843, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 50
 text = "username"

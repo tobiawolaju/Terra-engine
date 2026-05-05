@@ -9,6 +9,7 @@ extends Node
 @export var player_controller_path: NodePath = NodePath("player/CharacterBody3D")
 @export var deadalien_path: NodePath = NodePath("deadalien")
 @export var directional_light_path: NodePath = NodePath("WorldEnvironment2/DirectionalLight3D")
+@export var world_environment_path: NodePath = NodePath("WorldEnvironment2")
 @export var ground_mesh_path: NodePath = NodePath("ground/hill/hillmesh")
 @export var water_mesh_path: NodePath = NodePath("berrylake/water")
 @export var lake_surface_y: float = 0.0
@@ -28,6 +29,7 @@ var _spawned_berries: Array[WeakRef] = []
 var _underwater_since: Dictionary = {}
 var _lake_label: Label3D
 var _directional_light: DirectionalLight3D
+var _world_environment: WorldEnvironment
 var _ground_mesh: MeshInstance3D
 var _water_mesh: MeshInstance3D
 var _player_controller: Node
@@ -36,14 +38,16 @@ var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
 var oxygen_level: float = 50.0
 
-const LIGHT_GOOD: Color = Color("efee78")
-const LIGHT_BAD: Color = Color("ef5178")
-const GROUND_BAD: Color = Color("2b2b2b")
+const LIGHT_GOOD: Color = Color("f6e7b5")
+const LIGHT_BAD: Color = Color("9c3d3a")
 const GROUND_NORMAL: Color = Color("477725")
-const WATER_BAD: Color = Color("a35706c0")
-const WATER_NORMAL: Color = Color("5644ffc0")
+const GROUND_BAD: Color = Color("4a3b34")
+const WATER_NORMAL: Color = Color("2f6bffc0")
+const WATER_BAD: Color = Color("7a4a2ec0")
 const OXYGEN_BAR_NORMAL_MODULATE: Color = Color("ffffff")
-const OXYGEN_BAR_BAD_MODULATE: Color = Color("ff00ff")
+const OXYGEN_BAR_BAD_MODULATE: Color = Color("d16666")
+const BLOOM_GOOD: float = 0.2
+const BLOOM_BAD: float = 0.4
 
 
 func _ready() -> void:
@@ -51,6 +55,7 @@ func _ready() -> void:
 	_rng.randomize()
 	_lake_label = get_node_or_null(lake_label_path) as Label3D
 	_directional_light = get_node_or_null(directional_light_path) as DirectionalLight3D
+	_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
 	_ground_mesh = get_node_or_null(ground_mesh_path) as MeshInstance3D
 	_water_mesh = get_node_or_null(water_mesh_path) as MeshInstance3D
 	_player_controller = get_node_or_null(player_controller_path)
@@ -241,12 +246,13 @@ func _apply_oxygen_to_progress() -> void:
 
 
 func _apply_oxygen_visuals() -> void:
-	var badness: float = clampf((50.0 - oxygen_level) / 50.0, 0.0, 1.0)
+	var badness: float = _oxygen_badness()
 	var light_color: Color = LIGHT_GOOD.lerp(LIGHT_BAD, badness)
 	var ground_color: Color = GROUND_NORMAL.lerp(GROUND_BAD, badness)
 	var water_color: Color = WATER_NORMAL.lerp(WATER_BAD, badness)
 
 	_apply_directional_light_color(light_color)
+	_apply_environment_bloom(badness)
 	_apply_mesh_albedo(_ground_mesh, ground_color)
 	_apply_mesh_albedo(_water_mesh, water_color)
 
@@ -257,6 +263,14 @@ func _apply_directional_light_color(light_color: Color) -> void:
 	if _directional_light == null:
 		return
 	_directional_light.light_color = light_color
+
+
+func _apply_environment_bloom(badness: float) -> void:
+	if _world_environment == null:
+		_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
+	if _world_environment == null or _world_environment.environment == null:
+		return
+	_world_environment.environment.glow_bloom = lerpf(BLOOM_GOOD, BLOOM_BAD, badness)
 
 
 func _apply_mesh_albedo(mesh_node: MeshInstance3D, color_value: Color) -> void:
@@ -273,5 +287,10 @@ func _apply_mesh_albedo(mesh_node: MeshInstance3D, color_value: Color) -> void:
 func _apply_progress_modulate() -> void:
 	if progress_2d == null:
 		return
-	var badness: float = clampf((50.0 - oxygen_level) / 50.0, 0.0, 1.0)
-	progress_2d.modulate = OXYGEN_BAR_NORMAL_MODULATE.lerp(OXYGEN_BAR_BAD_MODULATE, badness)
+	progress_2d.modulate = OXYGEN_BAR_NORMAL_MODULATE
+
+
+func _oxygen_badness() -> float:
+	# Keep visuals calmer above ~60% oxygen, then accelerate near danger.
+	var normalized: float = clampf((60.0 - oxygen_level) / 60.0, 0.0, 1.0)
+	return pow(normalized, 1.35)

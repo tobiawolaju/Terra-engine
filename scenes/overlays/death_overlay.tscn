@@ -11,7 +11,7 @@ offset_left = -3630.0
 offset_top = -3809.0
 offset_right = 4861.0
 offset_bottom = 4523.0
-color = Color(0, 0, 0, 0.5294118)
+color = Color(0, 0, 0, 0.5137255)
 
 [node name="gameover" type="Label" parent="CanvasLayer" unique_id=387710538]
 anchors_preset = 8

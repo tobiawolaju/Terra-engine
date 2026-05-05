@@ -9,11 +9,13 @@ signal joystick_released
 @export var return_to_center: bool = true
 @export var joy_base_path: NodePath = NodePath("JoyBase")
 @export var joy_knob_path: NodePath = NodePath("JoyBase/JoyKnob")
+@export var pick_button_path: NodePath = NodePath("Button")
+@export var score_label: Label 
 
 @onready var joy_base: Control = get_node(joy_base_path)
 @onready var joy_knob: Control = get_node(joy_knob_path)
+@onready var pick_button: BaseButton = get_node_or_null(pick_button_path) as BaseButton
 @onready var username_label: Label = $Username
-@onready var score_label: Label = $Score
 
 var _active_touch_index: int = -1
 var _mouse_drag_active: bool = false
@@ -22,6 +24,7 @@ var _base_center: Vector2 = Vector2.ZERO
 var _max_offset: float = 0.0
 var _elapsed_seconds: int = 0
 var _elapsed_timer: Timer
+const SECONDS_PER_DAY: int = 120
 
 
 func _ready() -> void:
@@ -29,6 +32,8 @@ func _ready() -> void:
 	joy_base.mouse_filter = Control.MOUSE_FILTER_STOP
 	joy_knob.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	joy_base.gui_input.connect(_on_joy_base_gui_input)
+	if pick_button != null:
+		pick_button.pressed.connect(_on_pick_button_pressed)
 	_refresh_geometry()
 	_reset_joystick()
 	set_username("...")
@@ -39,6 +44,7 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _elapsed_timer != null and is_instance_valid(_elapsed_timer):
 		_elapsed_timer.stop()
+	Input.action_release("pick")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -188,7 +194,8 @@ func set_elapsed_time(seconds: int, _target_seconds: int = -1) -> void:
 	if score_label == null:
 		return
 	_elapsed_seconds = max(seconds, 0)
-	score_label.text = "%d sec Alive" % _elapsed_seconds
+	var day: int = _elapsed_seconds / SECONDS_PER_DAY
+	score_label.text = "Day %d" % day
 
 
 func set_score_text(text: String) -> void:
@@ -216,3 +223,11 @@ func _start_elapsed_timer() -> void:
 
 func _on_elapsed_timer_timeout() -> void:
 	set_elapsed_time(_elapsed_seconds + 1)
+
+
+func _on_pick_button_pressed() -> void:
+	if not InputMap.has_action("pick"):
+		return
+	Input.action_press("pick")
+	await get_tree().physics_frame
+	Input.action_release("pick")
