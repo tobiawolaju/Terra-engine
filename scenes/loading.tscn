@@ -10,7 +10,7 @@ corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc7uc"]
-bg_color = Color(0.5288034, 0.97327954, 0, 1)
+bg_color = Color(0.76862746, 0.40392157, 1, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -36,6 +36,7 @@ offset_left = -3350.0
 offset_top = -3306.0
 offset_right = 5141.0
 offset_bottom = 5026.0
+color = Color(0.4509804, 0.9254902, 0.3882353, 1)
 
 [node name="Container" type="Container" parent="." unique_id=255241464]
 layout_mode = 1
