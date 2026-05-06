@@ -15,7 +15,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.4509804, 0.9254902, 0.3882353, 1)
+color = Color(0.5294118, 0.6901961, 0.07450981, 1)
 
 [node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
 anchors_preset = 7
