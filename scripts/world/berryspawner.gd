@@ -17,6 +17,19 @@ extends Node
 @export var destroy_after_seconds: float = 5.0
 @export var deadalien_oxygen_reward: float = 45.0
 @export var lake_label_path: NodePath = NodePath("berrylake/water/Label3D")
+@export_group("Oxygen Visuals")
+@export var light_good: Color = Color("f6e7b5")
+@export var light_bad: Color = Color("9c3d3a")
+@export var ground_good: Color = Color("477725")
+@export var ground_bad: Color = Color("4a3b34")
+@export var water_good: Color = Color("00879973")
+@export var water_bad: Color = Color("7a4a2ec0")
+@export var oxygen_bar_good: Color = Color("ffffff")
+@export var oxygen_bar_bad: Color = Color("d16666")
+@export var hud_tint_good: Color = Color(0, 0, 0, 0)
+@export var hud_tint_bad: Color = Color("#b2007475")
+@export var bloom_good: float = 0.2
+@export var bloom_bad: float = 0.4
 @export var spawn_point_1: Node3D
 @export var spawn_point_2: Node3D
 @export var spawn_point_3: Node3D
@@ -36,22 +49,10 @@ var _water_mesh: MeshInstance3D
 var _player_controller: Node
 var _deadalien: Node3D
 var _hud_tint: ColorRect
+var _progress_fill_style: StyleBoxFlat
 var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
 var oxygen_level: float = 50.0
-
-const LIGHT_GOOD: Color = Color("f6e7b5")
-const LIGHT_BAD: Color = Color("9c3d3a")
-const GROUND_NORMAL: Color = Color("477725")
-const GROUND_BAD: Color = Color("4a3b34")
-const WATER_NORMAL: Color = Color("2f6bffc0")
-const WATER_BAD: Color = Color("7a4a2ec0")
-const OXYGEN_BAR_NORMAL_MODULATE: Color = Color("ffffff")
-const OXYGEN_BAR_BAD_MODULATE: Color = Color("d16666")
-const HUD_TINT_GOOD: Color = Color(0, 0, 0, 0)
-const HUD_TINT_BAD: Color = Color("#b2007475")
-const BLOOM_GOOD: float = 0.2
-const BLOOM_BAD: float = 0.4
 
 
 func _ready() -> void:
@@ -67,6 +68,7 @@ func _ready() -> void:
 	_deadalien = get_node_or_null(deadalien_path) as Node3D
 	if progress_2d == null:
 		progress_2d = get_node_or_null("HUD/ProgressBar") as ProgressBar
+	_ensure_progress_fill_style()
 	_spawn_timer = Timer.new()
 	_spawn_timer.one_shot = false
 	_spawn_timer.autostart = false
@@ -246,20 +248,20 @@ func _apply_oxygen_to_progress() -> void:
 		progress_2d.min_value = 0.0
 		progress_2d.max_value = 100.0
 		progress_2d.value = oxygen_level
-		_apply_progress_modulate()
 	_apply_oxygen_visuals()
 
 
 func _apply_oxygen_visuals() -> void:
 	var badness: float = _oxygen_badness()
-	var light_color: Color = LIGHT_GOOD.lerp(LIGHT_BAD, badness)
-	var ground_color: Color = GROUND_NORMAL.lerp(GROUND_BAD, badness)
-	var water_color: Color = WATER_NORMAL.lerp(WATER_BAD, badness)
+	var light_color: Color = light_good.lerp(light_bad, badness)
+	var ground_color: Color = ground_good.lerp(ground_bad, badness)
+	var water_color: Color = water_good.lerp(water_bad, badness)
 
 	_apply_directional_light_color(light_color)
 	_apply_environment_bloom(badness)
 	_apply_mesh_albedo(_ground_mesh, ground_color)
 	_apply_mesh_albedo(_water_mesh, water_color)
+	_apply_progress_fill_color(badness)
 	_apply_hud_tint(badness)
 
 
@@ -276,7 +278,7 @@ func _apply_environment_bloom(badness: float) -> void:
 		_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
 	if _world_environment == null or _world_environment.environment == null:
 		return
-	_world_environment.environment.glow_bloom = lerpf(BLOOM_GOOD, BLOOM_BAD, badness)
+	_world_environment.environment.glow_bloom = lerpf(bloom_good, bloom_bad, badness)
 
 
 func _apply_mesh_albedo(mesh_node: MeshInstance3D, color_value: Color) -> void:
@@ -290,10 +292,25 @@ func _apply_mesh_albedo(mesh_node: MeshInstance3D, color_value: Color) -> void:
 	material.albedo_color = color_value
 
 
-func _apply_progress_modulate() -> void:
+func _ensure_progress_fill_style() -> void:
 	if progress_2d == null:
 		return
-	progress_2d.modulate = OXYGEN_BAR_NORMAL_MODULATE
+	if _progress_fill_style != null:
+		return
+	var fill_style := progress_2d.get_theme_stylebox("fill") as StyleBoxFlat
+	if fill_style == null:
+		fill_style = StyleBoxFlat.new()
+	else:
+		fill_style = fill_style.duplicate() as StyleBoxFlat
+	progress_2d.add_theme_stylebox_override("fill", fill_style)
+	_progress_fill_style = fill_style
+
+
+func _apply_progress_fill_color(badness: float = 0.0) -> void:
+	_ensure_progress_fill_style()
+	if _progress_fill_style == null:
+		return
+	_progress_fill_style.bg_color = oxygen_bar_good.lerp(oxygen_bar_bad, badness)
 
 
 func _apply_hud_tint(badness: float) -> void:
@@ -301,10 +318,10 @@ func _apply_hud_tint(badness: float) -> void:
 		_hud_tint = get_node_or_null(hud_tint_path) as ColorRect
 	if _hud_tint == null:
 		return
-	_hud_tint.color = HUD_TINT_GOOD.lerp(HUD_TINT_BAD, badness)
+	_hud_tint.color = hud_tint_good.lerp(hud_tint_bad, badness)
 
 
 func _oxygen_badness() -> float:
-	# Keep visuals calmer above ~60% oxygen, then accelerate near danger.
-	var normalized: float = clampf((60.0 - oxygen_level) / 60.0, 0.0, 1.0)
+	# Keep visuals fully good at 50% oxygen and above, then accelerate near danger.
+	var normalized: float = clampf((50.0 - oxygen_level) / 50.0, 0.0, 1.0)
 	return pow(normalized, 1.35)

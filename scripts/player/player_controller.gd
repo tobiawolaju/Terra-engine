@@ -34,6 +34,8 @@ const SECONDS_PER_DAY: int = 120
 @export var anim_swim: AnimationPlayer
 @export var anim_dead: AnimationPlayer
 @export var armature: Node3D
+@export var control_node: CanvasItem
+@export var control_fade_duration_seconds: float = 3.0
 
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
@@ -44,6 +46,8 @@ var _death_score_submitted: bool = false
 var _held_pickable: Pickable
 var _pick_action_available: bool = false
 var _leap_cooldown_seconds: float = 0.0
+var _control_fade_triggered: bool = false
+var _control_fade_tween: Tween
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -133,6 +137,7 @@ func _physics_process(delta: float) -> void:
 
 	if move_direction.length() > 0.0:
 		move_direction = move_direction.normalized()
+		_trigger_control_fade_once()
 
 	velocity.x = move_direction.x * SPEED * speed_multiplier
 	velocity.z = move_direction.z * SPEED * speed_multiplier
@@ -262,6 +267,23 @@ func _set_death_overlay_time_spent_label(death_overlay_instance: Node, elapsed_s
 		return
 	var days_spent: int = max(elapsed_seconds, 0) / SECONDS_PER_DAY
 	time_label.text = "Days spent : %d" % days_spent
+
+
+func _trigger_control_fade_once() -> void:
+	if _control_fade_triggered:
+		return
+	_control_fade_triggered = true
+	if control_node != null:
+		control_node.modulate = Color("#ffffff")
+		if _control_fade_tween != null and is_instance_valid(_control_fade_tween):
+			_control_fade_tween.kill()
+		_control_fade_tween = create_tween()
+		_control_fade_tween.tween_property(
+			control_node,
+			"modulate",
+			Color("#ffffff00"),
+			maxf(control_fade_duration_seconds, 0.0)
+		)
 
 
 func _try_leap_assist(move_direction: Vector3) -> void:

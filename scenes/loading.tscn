@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://ditg2fnu71m3u"]
 
-[ext_resource type="Texture2D" uid="uid://dpc7atg8f4uka" path="res://logo.png" id="1_ir5ef"]
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
 bg_color = Color(1, 1, 1, 0.3137255)
 corner_radius_top_left = 25
@@ -37,7 +35,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.5294118, 0.6901961, 0.07450981, 1)
+color = Color(0.10980392, 0.10980392, 0.10980392, 1)
 
 [node name="Container" type="Container" parent="." unique_id=255241464]
 layout_mode = 1
@@ -52,11 +50,6 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Sprite2D2" type="Sprite2D" parent="Container" unique_id=90421222]
-position = Vector2(34.661457, -8.251245)
-scale = Vector2(0.39027333, 0.38908696)
-texture = ExtResource("1_ir5ef")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=837535864]
 layout_mode = 1

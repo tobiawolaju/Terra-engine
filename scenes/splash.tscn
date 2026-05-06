@@ -16,6 +16,20 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.10980392, 0.10980392, 0.10980392, 1)
 
+[node name="ColorRect2" type="ColorRect" parent="CanvasLayer" unique_id=354098250]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -573.0
+offset_top = -445.0
+offset_right = 580.0
+offset_bottom = -228.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.6156863, 0.8901961, 0.27450982, 1)
+
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=70749669]
 anchors_preset = 8
 anchor_left = 0.5
@@ -28,7 +42,6 @@ offset_right = 169.5
 offset_bottom = 75.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.5294118, 0.6901961, 0.07450981, 1)
 theme_override_fonts/font = ExtResource("1_86pdq")
 theme_override_font_sizes/font_size = 100
 text = "Terra Engine "
