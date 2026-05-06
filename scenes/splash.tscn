@@ -9,11 +9,12 @@ script = ExtResource("2_splash")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=483064880]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1520827716]
-offset_left = -3630.0
-offset_top = -3809.0
-offset_right = 4861.0
-offset_bottom = 4523.0
-color = Color(0.4509804, 0.9254902, 0.3882353, 1)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.10980392, 0.10980392, 0.10980392, 1)
 
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=70749669]
 anchors_preset = 8
@@ -27,22 +28,23 @@ offset_right = 169.5
 offset_bottom = 75.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.28235295, 1, 0.24705882, 1)
 theme_override_fonts/font = ExtResource("1_86pdq")
-theme_override_font_sizes/font_size = 150
+theme_override_font_sizes/font_size = 100
 text = "Terra Engine "
 
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=6904790]
-anchors_preset = 7
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 1.0
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -302.5
-offset_top = -63.0
-offset_right = 302.5
+anchor_bottom = 0.5
+offset_left = -149.0
+offset_top = 74.0
+offset_right = 149.0
+offset_bottom = 100.0
 grow_horizontal = 2
-grow_vertical = 0
+grow_vertical = 2
 theme_override_fonts/font = ExtResource("1_86pdq")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 25
 text = "Feed it . Or become food."

@@ -3,14 +3,14 @@
 [ext_resource type="Texture2D" uid="uid://dpc7atg8f4uka" path="res://logo.png" id="1_ir5ef"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
-bg_color = Color(0, 0, 0, 0.3137255)
+bg_color = Color(1, 1, 1, 0.3137255)
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc7uc"]
-bg_color = Color(0.76862746, 0.40392157, 1, 1)
+bg_color = Color(1, 1, 1, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
@@ -31,12 +31,13 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=649390560]
-layout_mode = 0
-offset_left = -3350.0
-offset_top = -3306.0
-offset_right = 5141.0
-offset_bottom = 5026.0
-color = Color(0.4509804, 0.9254902, 0.3882353, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.10980392, 0.10980392, 0.10980392, 1)
 
 [node name="Container" type="Container" parent="." unique_id=255241464]
 layout_mode = 1

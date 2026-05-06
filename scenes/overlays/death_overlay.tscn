@@ -7,11 +7,12 @@
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1262215064]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1484191316]
-offset_left = -3630.0
-offset_top = -3809.0
-offset_right = 4861.0
-offset_bottom = 4523.0
-color = Color(0, 0, 0, 0.5137255)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.69803923, 0, 0.45490196, 0.45882353)
 
 [node name="gameover" type="Label" parent="CanvasLayer" unique_id=387710538]
 anchors_preset = 8
@@ -25,6 +26,9 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.20392157, 0.6862745, 1)
+theme_override_colors/font_outline_color = Color(1, 0.20392157, 0.6862745, 1)
+theme_override_constants/outline_size = 15
 theme_override_fonts/font = ExtResource("1_tr2b5")
 theme_override_font_sizes/font_size = 100
 text = "Game over"

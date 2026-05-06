@@ -10,65 +10,69 @@ script = ExtResource("3_menu")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1717860935]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1195131001]
-offset_left = -3630.0
-offset_top = -3809.0
-offset_right = 4861.0
-offset_bottom = 4523.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.4509804, 0.9254902, 0.3882353, 1)
 
 [node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
-anchors_preset = 8
+anchors_preset = 7
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -232.0
-offset_top = -128.0
-offset_right = 112.0
-offset_bottom = -37.0
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -267.0
+offset_right = 172.0
+offset_bottom = -191.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 75
 text = "Play"
+horizontal_alignment = 1
 script = ExtResource("3_bqqt6")
 
 [node name="credits" type="Label" parent="CanvasLayer" unique_id=1803085847]
-anchors_preset = 8
+anchors_preset = 7
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -228.0
-offset_top = -38.0
-offset_right = 227.5
-offset_bottom = 38.0
+anchor_bottom = 1.0
+offset_left = -227.75
+offset_top = -104.0
+offset_right = 227.75
+offset_bottom = -28.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 75
-text = "Field Notes"
+text = "exit game"
+horizontal_alignment = 1
 script = ExtResource("3_bqqt6")
 
 [node name="leaderboard" type="Label" parent="CanvasLayer" unique_id=1268963254]
-anchors_preset = 8
+anchors_preset = 7
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -234.0
-offset_top = 39.0
-offset_right = 239.0
-offset_bottom = 115.0
+anchor_bottom = 1.0
+offset_left = -236.5
+offset_top = -183.0
+offset_right = 236.5
+offset_bottom = -107.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 75
 text = "leaderboard"
+horizontal_alignment = 1
 script = ExtResource("3_bqqt6")
 
 [node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
@@ -81,5 +85,19 @@ offset_right = 141.0
 offset_bottom = -11.0
 grow_vertical = 0
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 30
 text = "username"
+
+[node name="Main" type="Label" parent="CanvasLayer" unique_id=355620595]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -329.0
+offset_top = 57.0
+offset_right = 329.0
+offset_bottom = 157.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 100
+text = "Terra Engine "

@@ -6,6 +6,7 @@ extends Node
 @export var min_berry_scale: float = 1.0
 @export var max_berry_scale: float = 3.0
 @export var progress_2d: ProgressBar
+@export var hud_tint_path: NodePath = NodePath("HUD/tint")
 @export var player_controller_path: NodePath = NodePath("player/CharacterBody3D")
 @export var deadalien_path: NodePath = NodePath("deadalien")
 @export var directional_light_path: NodePath = NodePath("WorldEnvironment2/DirectionalLight3D")
@@ -34,6 +35,7 @@ var _ground_mesh: MeshInstance3D
 var _water_mesh: MeshInstance3D
 var _player_controller: Node
 var _deadalien: Node3D
+var _hud_tint: ColorRect
 var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
 var oxygen_level: float = 50.0
@@ -46,6 +48,8 @@ const WATER_NORMAL: Color = Color("2f6bffc0")
 const WATER_BAD: Color = Color("7a4a2ec0")
 const OXYGEN_BAR_NORMAL_MODULATE: Color = Color("ffffff")
 const OXYGEN_BAR_BAD_MODULATE: Color = Color("d16666")
+const HUD_TINT_GOOD: Color = Color(0, 0, 0, 0)
+const HUD_TINT_BAD: Color = Color("#b2007475")
 const BLOOM_GOOD: float = 0.2
 const BLOOM_BAD: float = 0.4
 
@@ -58,6 +62,7 @@ func _ready() -> void:
 	_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
 	_ground_mesh = get_node_or_null(ground_mesh_path) as MeshInstance3D
 	_water_mesh = get_node_or_null(water_mesh_path) as MeshInstance3D
+	_hud_tint = get_node_or_null(hud_tint_path) as ColorRect
 	_player_controller = get_node_or_null(player_controller_path)
 	_deadalien = get_node_or_null(deadalien_path) as Node3D
 	if progress_2d == null:
@@ -255,6 +260,7 @@ func _apply_oxygen_visuals() -> void:
 	_apply_environment_bloom(badness)
 	_apply_mesh_albedo(_ground_mesh, ground_color)
 	_apply_mesh_albedo(_water_mesh, water_color)
+	_apply_hud_tint(badness)
 
 
 func _apply_directional_light_color(light_color: Color) -> void:
@@ -288,6 +294,14 @@ func _apply_progress_modulate() -> void:
 	if progress_2d == null:
 		return
 	progress_2d.modulate = OXYGEN_BAR_NORMAL_MODULATE
+
+
+func _apply_hud_tint(badness: float) -> void:
+	if _hud_tint == null:
+		_hud_tint = get_node_or_null(hud_tint_path) as ColorRect
+	if _hud_tint == null:
+		return
+	_hud_tint.color = HUD_TINT_GOOD.lerp(HUD_TINT_BAD, badness)
 
 
 func _oxygen_badness() -> float:

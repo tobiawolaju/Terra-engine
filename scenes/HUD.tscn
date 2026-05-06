@@ -30,13 +30,6 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7hsmw"]
-bg_color = Color(0, 0, 0, 0.25490198)
-corner_radius_top_left = 200
-corner_radius_top_right = 200
-corner_radius_bottom_right = 200
-corner_radius_bottom_left = 200
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fls4u"]
 bg_color = Color(0, 0, 0, 0.3137255)
 corner_radius_top_left = 25
@@ -88,6 +81,14 @@ script = ExtResource("1_hudgd")
 pick_button_path = NodePath("pick")
 score_label = NodePath("Label")
 
+[node name="tint" type="ColorRect" parent="." unique_id=504770909]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
 [node name="JoyBase2" type="Panel" parent="." unique_id=1086074839]
 custom_minimum_size = Vector2(220, 220)
 anchors_preset = 2
@@ -120,22 +121,6 @@ offset_top = 70.0
 offset_right = 150.0
 offset_bottom = 150.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_8cuoo")
-
-[node name="Action" type="Panel" parent="." unique_id=1817801479]
-visible = false
-custom_minimum_size = Vector2(80, 80)
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -245.0
-offset_top = -249.0
-offset_right = -130.0
-offset_bottom = -135.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_7hsmw")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=204206488]
 anchors_preset = 1
