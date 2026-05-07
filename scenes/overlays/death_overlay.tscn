@@ -1,8 +1,25 @@
 [gd_scene format=3 uid="uid://quqe226c53kj"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="1_tr2b5"]
+[ext_resource type="Script" uid="uid://b47mloh60kfr2" path="res://scripts/ui/death_overlay.gd" id="2_0f1k9"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tr2b5"]
+bg_color = Color(0.76862746, 0.40392157, 1, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b1syl"]
+bg_color = Color(0.76862746, 0.40392157, 1, 1)
+skew = Vector2(0.3, 0.1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
 
 [node name="DeathOverlay" type="Node2D" unique_id=510403098]
+script = ExtResource("2_0f1k9")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1262215064]
 
@@ -33,7 +50,7 @@ theme_override_fonts/font = ExtResource("1_tr2b5")
 theme_override_font_sizes/font_size = 100
 text = "Game over"
 
-[node name="time-spent" type="Label" parent="CanvasLayer" unique_id=139643142]
+[node name="Dayspent" type="Label" parent="CanvasLayer" unique_id=139643142]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -45,5 +62,24 @@ offset_right = 181.5
 offset_bottom = 89.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_tr2b5")
 theme_override_font_sizes/font_size = 40
-text = "Time spent : 2 min "
+text = "Day 0.0"
+
+[node name="Play" type="Button" parent="CanvasLayer" unique_id=1035998738]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -105.5
+offset_top = -105.0
+offset_right = 105.5
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("1_tr2b5")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_tr2b5")
+theme_override_styles/hover = SubResource("StyleBoxFlat_b1syl")
+text = "Play"

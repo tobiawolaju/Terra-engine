@@ -1,0 +1,118 @@
+[gd_scene format=3 uid="uid://b705m2yedyhuu"]
+
+[ext_resource type="Script" uid="uid://c3gh3endusit6" path="res://scripts/props/vinemonster.gd" id="1_vine"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vine"]
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.35
+radial_segments = 10
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vine1"]
+albedo_color = Color(1, 0.22, 0.22, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vine2"]
+albedo_color = Color(0.26, 1, 0.26, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vine3"]
+albedo_color = Color(0.28, 0.45, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vine4"]
+albedo_color = Color(1, 0.9, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vine5"]
+albedo_color = Color(1, 0.3, 1, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vine"]
+radius = 2.0
+
+[node name="Vinemonster" type="Node3D" unique_id=468647650]
+script = ExtResource("1_vine")
+
+[node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=814382072]
+bones/0/name = "Bone1"
+bones/0/parent = -1
+bones/0/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+bones/0/enabled = true
+bones/0/position = Vector3(0, 0, 0)
+bones/0/rotation = Quaternion(0, 0, 0, 1)
+bones/0/scale = Vector3(1, 1, 1)
+bones/1/name = "Bone2"
+bones/1/parent = 0
+bones/1/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+bones/1/enabled = true
+bones/1/position = Vector3(0, 0.35, 0)
+bones/1/rotation = Quaternion(0, 0, 0, 1)
+bones/1/scale = Vector3(1, 1, 1)
+bones/2/name = "Bone3"
+bones/2/parent = 1
+bones/2/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+bones/2/enabled = true
+bones/2/position = Vector3(0, 0.35, 0)
+bones/2/rotation = Quaternion(0, 0, 0, 1)
+bones/2/scale = Vector3(1, 1, 1)
+bones/3/name = "Bone4"
+bones/3/parent = 2
+bones/3/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+bones/3/enabled = true
+bones/3/position = Vector3(0, 0.35, 0)
+bones/3/rotation = Quaternion(0, 0, 0, 1)
+bones/3/scale = Vector3(1, 1, 1)
+bones/4/name = "Bone5"
+bones/4/parent = 3
+bones/4/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+bones/4/enabled = true
+bones/4/position = Vector3(0, 0.35, 0)
+bones/4/rotation = Quaternion(0, 0, 0, 1)
+bones/4/scale = Vector3(1, 1, 1)
+
+[node name="BoneAttachment3D1" type="BoneAttachment3D" parent="Skeleton3D" unique_id=1812624853]
+bone_name = "Bone1"
+bone_idx = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Skeleton3D/BoneAttachment3D1" unique_id=2141586858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_vine")
+surface_material_override/0 = SubResource("StandardMaterial3D_vine1")
+
+[node name="BoneAttachment3D2" type="BoneAttachment3D" parent="Skeleton3D" unique_id=2075538740]
+bone_name = "Bone2"
+bone_idx = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Skeleton3D/BoneAttachment3D2" unique_id=592223259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_vine")
+surface_material_override/0 = SubResource("StandardMaterial3D_vine2")
+
+[node name="BoneAttachment3D3" type="BoneAttachment3D" parent="Skeleton3D" unique_id=130821588]
+bone_name = "Bone3"
+bone_idx = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Skeleton3D/BoneAttachment3D3" unique_id=72740780]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_vine")
+surface_material_override/0 = SubResource("StandardMaterial3D_vine3")
+
+[node name="BoneAttachment3D4" type="BoneAttachment3D" parent="Skeleton3D" unique_id=548944148]
+bone_name = "Bone4"
+bone_idx = 3
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Skeleton3D/BoneAttachment3D4" unique_id=2030066584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_vine")
+surface_material_override/0 = SubResource("StandardMaterial3D_vine4")
+
+[node name="BoneAttachment3D5" type="BoneAttachment3D" parent="Skeleton3D" unique_id=502643908]
+bone_name = "Bone5"
+bone_idx = 4
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Skeleton3D/BoneAttachment3D5" unique_id=1637854629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_vine")
+surface_material_override/0 = SubResource("StandardMaterial3D_vine5")
+
+[node name="Area3D" type="Area3D" parent="." unique_id=630753472]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=61716476]
+shape = SubResource("SphereShape3D_vine")

@@ -1,8 +1,22 @@
 [gd_scene format=3 uid="uid://dtrbeqj8cyhx5"]
 
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_bqqt6"]
-[ext_resource type="Script" uid="uid://cthovsw845ers" path="res://scripts/ui/ui_hover_focus_anim.gd" id="3_bqqt6"]
 [ext_resource type="Script" uid="uid://cl1ejphg8ne5v" path="res://scripts/ui/main_menu.gd" id="3_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ln24"]
+bg_color = Color(0.76862746, 0.40392157, 1, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
+bg_color = Color(0.76862746, 0.40392157, 1, 1)
+skew = Vector2(0.3, 0.1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
 
 [node name="MainMenu" type="Node2D" unique_id=104621629]
 script = ExtResource("3_menu")
@@ -15,90 +29,98 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.6156863, 0.8901961, 0.27450982, 1)
-
-[node name="solo" type="Label" parent="CanvasLayer" unique_id=200758213]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -172.0
-offset_top = -267.0
-offset_right = 172.0
-offset_bottom = -191.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 50
-text = "Play"
-horizontal_alignment = 1
-script = ExtResource("3_bqqt6")
-
-[node name="credits" type="Label" parent="CanvasLayer" unique_id=1803085847]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -227.75
-offset_top = -104.0
-offset_right = 227.75
-offset_bottom = -28.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(1, 1, 1, 0.5137255)
-theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 50
-text = "exit game"
-horizontal_alignment = 1
-script = ExtResource("3_bqqt6")
-
-[node name="leaderboard" type="Label" parent="CanvasLayer" unique_id=1268963254]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -236.5
-offset_top = -183.0
-offset_right = 236.5
-offset_bottom = -107.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 50
-text = "leaderboard"
-horizontal_alignment = 1
-script = ExtResource("3_bqqt6")
+color = Color(0.13725491, 0.13725491, 0.13725491, 1)
 
 [node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = -37.0
-offset_right = 141.0
-offset_bottom = -11.0
-grow_vertical = 0
+offset_left = 30.0
+offset_top = 77.0
+offset_right = 181.0
+offset_bottom = 111.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 30
+text = "playing as:"
+
+[node name="username2" type="Label" parent="CanvasLayer" unique_id=1266866292]
+offset_left = 211.0
+offset_top = 75.0
+offset_right = 362.0
+offset_bottom = 109.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 30
 text = "username"
 
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=355620595]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -329.0
-offset_top = 57.0
-offset_right = 329.0
-offset_bottom = 157.0
-grow_horizontal = 2
+offset_left = 19.0
+offset_top = 25.0
+offset_right = 349.0
+offset_bottom = 76.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 100
+theme_override_font_sizes/font_size = 50
 text = "Terra Engine "
+
+[node name="Play" type="Button" parent="CanvasLayer" unique_id=637757913]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -86.25
+offset_top = -120.0
+offset_right = 86.25
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
+text = "Play
+"
+
+[node name="Leaderboard" type="Button" parent="CanvasLayer" unique_id=337940190]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -120.0
+offset_right = 345.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
+text = "Leaderboard"
+
+[node name="Exit" type="Button" parent="CanvasLayer" unique_id=463577426]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -235.0
+offset_top = -120.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
+text = "Exit"

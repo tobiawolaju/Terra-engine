@@ -10,12 +10,17 @@ signal joystick_released
 @export var joy_base_path: NodePath = NodePath("JoyBase")
 @export var joy_knob_path: NodePath = NodePath("JoyBase/JoyKnob")
 @export var pick_button_path: NodePath = NodePath("Button")
-@export var score_label: Label 
+@export var day_spent_label_path: NodePath = NodePath("Dayspent")
+@export var combo_label_path: NodePath = NodePath("Combo")
+@export var combo_fx_path: NodePath = NodePath("ComboFX")
 
 @onready var joy_base: Control = get_node(joy_base_path)
 @onready var joy_knob: Control = get_node(joy_knob_path)
 @onready var pick_button: BaseButton = get_node_or_null(pick_button_path) as BaseButton
 @onready var username_label: Label = $Username
+@onready var day_spent_label: Label = get_node_or_null(day_spent_label_path) as Label
+@onready var combo_label: Label = get_node_or_null(combo_label_path) as Label
+@onready var combo_fx: Node = get_node_or_null(combo_fx_path)
 
 var _active_touch_index: int = -1
 var _mouse_drag_active: bool = false
@@ -24,6 +29,7 @@ var _base_center: Vector2 = Vector2.ZERO
 var _max_offset: float = 0.0
 var _elapsed_seconds: int = 0
 var _elapsed_timer: Timer
+var _combo_label_tween: Tween
 const SECONDS_PER_DAY: int = 120
 
 
@@ -191,17 +197,58 @@ func set_username(username: String) -> void:
 
 
 func set_elapsed_time(seconds: int, _target_seconds: int = -1) -> void:
-	if score_label == null:
+	if day_spent_label == null:
 		return
 	_elapsed_seconds = max(seconds, 0)
 	var day: int = _elapsed_seconds / SECONDS_PER_DAY
-	score_label.text = "Day %d" % day
+	day_spent_label.text = "Day %d" % day
 
 
 func set_score_text(text: String) -> void:
-	if score_label == null:
+	if day_spent_label == null:
 		return
-	score_label.text = text
+	day_spent_label.text = text
+
+
+func show_combo_feedback(text: String, positive: bool = true) -> void:
+	if combo_label == null:
+		return
+
+	if _combo_label_tween != null and is_instance_valid(_combo_label_tween):
+		_combo_label_tween.kill()
+
+	combo_label.text = text
+	combo_label.visible = true
+	combo_label.modulate = Color(1, 1, 1, 0) if positive else Color(1, 0.45, 0.45, 0)
+	combo_label.scale = Vector2.ONE * 0.5
+
+	_combo_label_tween = create_tween()
+	_combo_label_tween.tween_property(combo_label, "modulate", Color(1, 1, 1, 1) if positive else Color(1, 0.45, 0.45, 1), 0.12)
+	_combo_label_tween.parallel().tween_property(combo_label, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_combo_label_tween.tween_interval(0.35)
+	_combo_label_tween.tween_property(combo_label, "modulate", Color(1, 1, 1, 0) if positive else Color(1, 0.45, 0.45, 0), 1.0)
+
+
+func play_combo_fx(combo_count: int = 1, reward: float = 0.0) -> void:
+	if combo_fx == null:
+		return
+
+	if combo_fx.has_method("restart"):
+		combo_fx.call("restart")
+		return
+
+	if combo_fx is CPUParticles2D:
+		var cpu_fx := combo_fx as CPUParticles2D
+		cpu_fx.emitting = false
+		cpu_fx.restart()
+		cpu_fx.emitting = true
+		return
+
+	if combo_fx is GPUParticles2D:
+		var gpu_fx := combo_fx as GPUParticles2D
+		gpu_fx.emitting = false
+		gpu_fx.restart()
+		gpu_fx.emitting = true
 
 
 func get_elapsed_seconds() -> int:

@@ -5,6 +5,7 @@ extends Node
 @export var max_berries: int = 10
 @export var min_berry_scale: float = 1.0
 @export var max_berry_scale: float = 3.0
+@export var combo_window_seconds: float = 4.0
 @export var progress_2d: ProgressBar
 @export var hud_tint_path: NodePath = NodePath("HUD/tint")
 @export var player_controller_path: NodePath = NodePath("player/CharacterBody3D")
@@ -30,6 +31,11 @@ extends Node
 @export var hud_tint_bad: Color = Color("#b2007475")
 @export var bloom_good: float = 0.2
 @export var bloom_bad: float = 0.4
+@export var oxygen_visual_transition_seconds: float = 4.0
+@export_group("Player Oxygen FX")
+@export var player_vfx_mesh_path: NodePath
+@export_range(0.0, 100.0, 0.1) var oxygen_loss_fx_start_threshold: float = 25.0
+@export_range(0.0, 100.0, 0.1) var oxygen_loss_fx_stop_threshold: float = 5.0
 @export var spawn_point_1: Node3D
 @export var spawn_point_2: Node3D
 @export var spawn_point_3: Node3D
@@ -50,9 +56,17 @@ var _player_controller: Node
 var _deadalien: Node3D
 var _hud_tint: ColorRect
 var _progress_fill_style: StyleBoxFlat
+var _player_vfx_mesh: MeshInstance3D
+var _hud: CanvasLayer
 var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
+var _delivery_combo_count: int = 0
+var _last_delivery_time: float = -1.0
 var oxygen_level: float = 50.0
+var _displayed_oxygen_level: float = 50.0
+var _displayed_oxygen_from: float = 50.0
+var _displayed_oxygen_to: float = 50.0
+var _displayed_oxygen_elapsed: float = 0.0
 
 
 func _ready() -> void:
@@ -63,9 +77,11 @@ func _ready() -> void:
 	_world_environment = get_node_or_null(world_environment_path) as WorldEnvironment
 	_ground_mesh = get_node_or_null(ground_mesh_path) as MeshInstance3D
 	_water_mesh = get_node_or_null(water_mesh_path) as MeshInstance3D
+	_hud = _get_hud()
 	_hud_tint = get_node_or_null(hud_tint_path) as ColorRect
 	_player_controller = get_node_or_null(player_controller_path)
 	_deadalien = get_node_or_null(deadalien_path) as Node3D
+	_player_vfx_mesh = get_node_or_null(player_vfx_mesh_path) as MeshInstance3D
 	if progress_2d == null:
 		progress_2d = get_node_or_null("HUD/ProgressBar") as ProgressBar
 	_ensure_progress_fill_style()
@@ -85,13 +101,21 @@ func _ready() -> void:
 	add_child(_oxygen_timer)
 	_oxygen_timer.start()
 
+	_displayed_oxygen_level = oxygen_level
+	_displayed_oxygen_from = oxygen_level
+	_displayed_oxygen_to = oxygen_level
+	_displayed_oxygen_elapsed = oxygen_visual_transition_seconds
 	_apply_oxygen_to_progress()
+	_apply_oxygen_visuals(_oxygen_badness_for(_displayed_oxygen_level))
+	_apply_player_oxygen_fx(_displayed_oxygen_level)
 	_update_lake_label(0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_cleanup_spawned_berries()
-	_handle_lake_logic()
+	if not _death_triggered:
+		_handle_lake_logic()
+	_update_oxygen_visuals(delta)
 
 
 func _spawn_berry() -> void:
@@ -122,6 +146,10 @@ func _spawn_berry() -> void:
 	var scale_max: float = maxf(min_berry_scale, max_berry_scale)
 	var random_scale: float = _rng.randf_range(scale_min, scale_max)
 	berry_3d.scale = Vector3.ONE * random_scale
+	var oxygen_reward: float = _get_berry_oxygen_reward(random_scale)
+	berry_3d.set_meta("berry_scale", random_scale)
+	berry_3d.set_meta("oxygen_reward", oxygen_reward)
+	_apply_berry_visuals(berry_3d, random_scale, oxygen_reward)
 	_spawned_berries.append(weakref(berry_3d))
 
 
@@ -149,6 +177,9 @@ func _cleanup_spawned_berries() -> void:
 
 
 func _handle_lake_logic() -> void:
+	if _death_triggered:
+		return
+
 	var now_seconds: float = Time.get_ticks_msec() / 1000.0
 	var underwater_count: int = 0
 	var alive_ids: Dictionary = {}
@@ -168,7 +199,9 @@ func _handle_lake_logic() -> void:
 
 			var underwater_duration: float = now_seconds - float(_underwater_since[berry_id])
 			if underwater_duration >= maxf(destroy_after_seconds, 0.0):
-				_add_oxygen(10.0)
+				var oxygen_reward: float = _get_berry_reward_from_node(berry)
+				_register_delivery_feedback(oxygen_reward, now_seconds)
+				_add_oxygen(oxygen_reward)
 				berry.queue_free()
 				_underwater_since.erase(berry_id)
 				underwater_count = max(underwater_count - 1, 0)
@@ -222,16 +255,150 @@ func _update_lake_label(underwater_count: int) -> void:
 
 
 func _on_oxygen_tick() -> void:
+	if _death_triggered or _is_oxygen_refilling():
+		return
 	_add_oxygen(-2.0)
 
 
 func _add_oxygen(delta_amount: float) -> void:
+	if _death_triggered:
+		return
+
 	oxygen_level = clampf(oxygen_level + delta_amount, 0.0, 100.0)
 	_apply_oxygen_to_progress()
 
 	if oxygen_level <= 0.0 and not _death_triggered:
 		_death_triggered = true
+		if _oxygen_timer != null:
+			_oxygen_timer.stop()
 		_trigger_player_death()
+
+
+func _register_delivery_feedback(oxygen_reward: float, now_seconds: float) -> void:
+	if oxygen_reward > 0.0:
+		if _last_delivery_time >= 0.0 and (now_seconds - _last_delivery_time) <= maxf(combo_window_seconds, 0.0):
+			_delivery_combo_count += 1
+		else:
+			_delivery_combo_count = 1
+		_last_delivery_time = now_seconds
+	else:
+		_delivery_combo_count = 0
+		_last_delivery_time = -1.0
+
+	_show_delivery_feedback(oxygen_reward, _delivery_combo_count)
+
+
+func _show_delivery_feedback(oxygen_reward: float, combo_count: int) -> void:
+	var hud: CanvasLayer = _get_hud()
+	if hud == null:
+		return
+
+	var reward_text: String = "%s%d oxygen" % [_signed_prefix(oxygen_reward), int(round(absf(oxygen_reward)))]
+	if oxygen_reward > 0.0 and combo_count > 1:
+		reward_text = "Combo x%d  %s" % [combo_count, reward_text]
+
+	if hud.has_method("show_combo_feedback"):
+		hud.call("show_combo_feedback", reward_text, oxygen_reward >= 0.0)
+	if oxygen_reward > 0.0 and hud.has_method("play_combo_fx"):
+		hud.call("play_combo_fx", combo_count, oxygen_reward)
+
+
+func _signed_prefix(value: float) -> String:
+	return "+" if value >= 0.0 else "-"
+
+
+func _get_hud() -> CanvasLayer:
+	var current_scene: Node = get_tree().current_scene
+	if current_scene == null:
+		return null
+	var hud := current_scene.get_node_or_null("HUD") as CanvasLayer
+	if hud != null:
+		_hud = hud
+	return _hud
+
+
+func _get_berry_reward_from_node(berry: Node) -> float:
+	if berry != null and berry.has_meta("oxygen_reward"):
+		return float(berry.get_meta("oxygen_reward"))
+	if berry != null and berry.has_meta("berry_scale"):
+		return _get_berry_oxygen_reward(float(berry.get_meta("berry_scale")))
+	return 10.0
+
+
+func _get_berry_oxygen_reward(scale: float) -> float:
+	var scale_min: float = minf(min_berry_scale, max_berry_scale)
+	var scale_max: float = maxf(min_berry_scale, max_berry_scale)
+	var normalized: float = clampf(inverse_lerp(scale_min, scale_max, scale), 0.0, 1.0)
+
+	if normalized <= 0.33:
+		if _rng.randf() < 0.55:
+			return -float(_rng.randi_range(4, 10))
+		return float(_rng.randi_range(8, 18))
+
+	if normalized <= 0.7:
+		return float(_rng.randi_range(2, 8))
+
+	return float(_rng.randi_range(8, 16))
+
+
+func _get_berry_color(scale: float, oxygen_reward: float) -> Color:
+	var scale_min: float = minf(min_berry_scale, max_berry_scale)
+	var scale_max: float = maxf(min_berry_scale, max_berry_scale)
+	var normalized: float = clampf(inverse_lerp(scale_min, scale_max, scale), 0.0, 1.0)
+
+	var small_risky: Color = Color("#d84c4c")
+	var ripe: Color = Color("#ff7b55")
+	var lush: Color = Color("#9e62ff")
+	var rotten: Color = Color("#8e2d2d")
+
+	if oxygen_reward < 0.0:
+		return rotten.lerp(small_risky, normalized * 0.6)
+	return small_risky.lerp(ripe, normalized * 0.55).lerp(lush, normalized)
+
+
+func _apply_berry_visuals(berry_root: Node3D, scale: float, oxygen_reward: float) -> void:
+	if berry_root == null:
+		return
+
+	var berry_color: Color = _get_berry_color(scale, oxygen_reward)
+	_tint_mesh_instances(berry_root, berry_color)
+
+
+func _tint_mesh_instances(node: Node, berry_color: Color) -> void:
+	if node == null:
+		return
+
+	if node is MeshInstance3D:
+		_tint_mesh_instance(node as MeshInstance3D, berry_color)
+
+	for child: Node in node.get_children():
+		_tint_mesh_instances(child, berry_color)
+
+
+func _tint_mesh_instance(mesh_node: MeshInstance3D, berry_color: Color) -> void:
+	if mesh_node == null:
+		return
+
+	var material: StandardMaterial3D = null
+	var active_material := mesh_node.get_active_material(0)
+	if active_material is StandardMaterial3D:
+		material = (active_material as StandardMaterial3D).duplicate() as StandardMaterial3D
+	elif mesh_node.material_override is StandardMaterial3D:
+		material = (mesh_node.material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
+	else:
+		material = StandardMaterial3D.new()
+
+	material.albedo_color = berry_color
+
+	var surface_count: int = 0
+	if mesh_node.mesh != null:
+		surface_count = mesh_node.mesh.get_surface_count()
+
+	if surface_count > 0:
+		for surface_index: int in range(surface_count):
+			mesh_node.set_surface_override_material(surface_index, material)
+	else:
+		mesh_node.material_override = material
 
 
 func _trigger_player_death() -> void:
@@ -244,15 +411,46 @@ func _trigger_player_death() -> void:
 
 
 func _apply_oxygen_to_progress() -> void:
+	_displayed_oxygen_from = _displayed_oxygen_level
+	_displayed_oxygen_to = oxygen_level
+	_displayed_oxygen_elapsed = 0.0
+
+	if oxygen_visual_transition_seconds <= 0.0:
+		_displayed_oxygen_level = oxygen_level
+		_displayed_oxygen_from = oxygen_level
+		_displayed_oxygen_to = oxygen_level
+		_displayed_oxygen_elapsed = 0.0
+
 	if progress_2d != null:
 		progress_2d.min_value = 0.0
 		progress_2d.max_value = 100.0
-		progress_2d.value = oxygen_level
-	_apply_oxygen_visuals()
+		progress_2d.value = _displayed_oxygen_level
 
 
-func _apply_oxygen_visuals() -> void:
-	var badness: float = _oxygen_badness()
+func _update_oxygen_visuals(delta: float) -> void:
+	if is_equal_approx(_displayed_oxygen_level, _displayed_oxygen_to):
+		return
+
+	var duration: float = maxf(oxygen_visual_transition_seconds, 0.001)
+	_displayed_oxygen_elapsed = minf(_displayed_oxygen_elapsed + delta, duration)
+	var weight: float = _displayed_oxygen_elapsed / duration
+	_displayed_oxygen_level = lerpf(_displayed_oxygen_from, _displayed_oxygen_to, weight)
+
+	if is_equal_approx(_displayed_oxygen_level, _displayed_oxygen_to):
+		_displayed_oxygen_level = _displayed_oxygen_to
+
+	if progress_2d != null:
+		progress_2d.value = _displayed_oxygen_level
+
+	_apply_oxygen_visuals(_oxygen_badness_for(_displayed_oxygen_level))
+	_apply_player_oxygen_fx(_displayed_oxygen_level)
+
+
+func _is_oxygen_refilling() -> bool:
+	return _displayed_oxygen_level < _displayed_oxygen_to and not is_equal_approx(_displayed_oxygen_level, _displayed_oxygen_to)
+
+
+func _apply_oxygen_visuals(badness: float) -> void:
 	var light_color: Color = light_good.lerp(light_bad, badness)
 	var ground_color: Color = ground_good.lerp(ground_bad, badness)
 	var water_color: Color = water_good.lerp(water_bad, badness)
@@ -321,7 +519,47 @@ func _apply_hud_tint(badness: float) -> void:
 	_hud_tint.color = hud_tint_good.lerp(hud_tint_bad, badness)
 
 
+func _apply_player_oxygen_fx(displayed_oxygen: float) -> void:
+	var loss_upper: float = maxf(oxygen_loss_fx_start_threshold, oxygen_loss_fx_stop_threshold)
+	var loss_lower: float = minf(oxygen_loss_fx_start_threshold, oxygen_loss_fx_stop_threshold)
+	var gain_active: bool = _is_oxygen_refilling()
+	var loss_active: bool = displayed_oxygen <= loss_upper and displayed_oxygen > loss_lower and not gain_active
+	var loss_amount: float = inverse_lerp(loss_upper, loss_lower, displayed_oxygen)
+	if displayed_oxygen <= loss_lower:
+		loss_amount = 0.0
+	loss_amount = clampf(loss_amount, 0.0, 1.0)
+	var gain_amount: float = 0.0
+	if gain_active:
+		var refill_span: float = maxf(absf(_displayed_oxygen_to - _displayed_oxygen_from), 0.001)
+		gain_amount = clampf((_displayed_oxygen_level - _displayed_oxygen_from) / refill_span, 0.0, 1.0)
+
+	_apply_vfx_shader_params(loss_active, loss_amount, gain_active, gain_amount)
+
+
+func _apply_vfx_shader_params(loss_active: bool, loss_amount: float, gain_active: bool, gain_amount: float) -> void:
+	if _player_vfx_mesh == null:
+		_player_vfx_mesh = get_node_or_null(player_vfx_mesh_path) as MeshInstance3D
+	if _player_vfx_mesh == null:
+		return
+
+	var material := _player_vfx_mesh.get_active_material(0) as ShaderMaterial
+	if material == null:
+		material = _player_vfx_mesh.material_override as ShaderMaterial
+	if material == null:
+		return
+
+	material.set_shader_parameter("oxygen_level", clampf(_displayed_oxygen_level / 100.0, 0.0, 1.0))
+	material.set_shader_parameter("loss_active", loss_active)
+	material.set_shader_parameter("loss_amount", loss_amount)
+	material.set_shader_parameter("gain_active", gain_active)
+	material.set_shader_parameter("gain_amount", gain_amount)
+
+
 func _oxygen_badness() -> float:
+	return _oxygen_badness_for(oxygen_level)
+
+
+func _oxygen_badness_for(oxygen_value: float) -> float:
 	# Keep visuals fully good at 50% oxygen and above, then accelerate near danger.
-	var normalized: float = clampf((50.0 - oxygen_level) / 50.0, 0.0, 1.0)
+	var normalized: float = clampf((50.0 - oxygen_value) / 50.0, 0.0, 1.0)
 	return pow(normalized, 1.35)

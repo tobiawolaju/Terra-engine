@@ -28,6 +28,8 @@ const SECONDS_PER_DAY: int = 120
 @export var death_overlay_delay_seconds: float = 2.0
 @export var armature_turn_speed: float = 6.0
 @export var animation_blend_time: float = 0.15
+@export var feet: Node3D
+@export var jump_dust_fx: GPUParticles3D
 @export var anim_run: AnimationPlayer
 @export var anim_idle: AnimationPlayer
 @export var anim_jump: AnimationPlayer
@@ -36,6 +38,8 @@ const SECONDS_PER_DAY: int = 120
 @export var armature: Node3D
 @export var control_node: CanvasItem
 @export var control_fade_duration_seconds: float = 3.0
+@export var is_vined: bool = false
+@export var jump_force: float = JUMP_VELOCITY
 
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
@@ -117,9 +121,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = 0.0
 		if Input.is_action_just_pressed("jump") and not is_in_water:
-			velocity.y = JUMP_VELOCITY
+			velocity.y = jump_force
+			_play_jump_dust_fx()
 
 	var speed_multiplier: float = 0.5 if is_in_water else 1.0
+	if is_vined:
+		speed_multiplier *= 0.3
 	var move_direction: Vector3 = Vector3.ZERO
 	if camera != null:
 		var cam_basis: Basis = camera.global_transform.basis
@@ -262,11 +269,11 @@ func _submit_death_score(elapsed_seconds: int) -> void:
 func _set_death_overlay_time_spent_label(death_overlay_instance: Node, elapsed_seconds: int) -> void:
 	if death_overlay_instance == null:
 		return
-	var time_label: Label = death_overlay_instance.get_node_or_null("CanvasLayer/time-spent") as Label
-	if time_label == null:
+	var day_label: Label = death_overlay_instance.get_node_or_null("CanvasLayer/Dayspent") as Label
+	if day_label == null:
 		return
-	var days_spent: int = max(elapsed_seconds, 0) / SECONDS_PER_DAY
-	time_label.text = "Days spent : %d" % days_spent
+	var days_spent: float = float(max(elapsed_seconds, 0)) / float(SECONDS_PER_DAY)
+	day_label.text = "Day %.1f" % days_spent
 
 
 func _trigger_control_fade_once() -> void:
@@ -284,6 +291,14 @@ func _trigger_control_fade_once() -> void:
 			Color("#ffffff00"),
 			maxf(control_fade_duration_seconds, 0.0)
 		)
+
+
+func _play_jump_dust_fx() -> void:
+	if jump_dust_fx == null or not is_instance_valid(jump_dust_fx):
+		return
+
+	jump_dust_fx.restart()
+	jump_dust_fx.emitting = true
 
 
 func _try_leap_assist(move_direction: Vector3) -> void:
