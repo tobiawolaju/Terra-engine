@@ -14,7 +14,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.13725491, 0.13725491, 0.13725491, 1)
+color = Color(0.73333335, 0.972549, 0, 1)
 
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=70749669]
 anchors_preset = 8
@@ -28,6 +28,9 @@ offset_right = 169.5
 offset_bottom = 75.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 50
 theme_override_fonts/font = ExtResource("1_86pdq")
 theme_override_font_sizes/font_size = 100
 text = "Terra Engine "

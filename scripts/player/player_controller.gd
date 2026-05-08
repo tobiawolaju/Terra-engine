@@ -38,8 +38,22 @@ const SECONDS_PER_DAY: int = 120
 @export var armature: Node3D
 @export var control_node: CanvasItem
 @export var control_fade_duration_seconds: float = 3.0
+@export var audio_bg_path: NodePath = NodePath("../../Audio/BG")
+@export var audio_run_path: NodePath = NodePath("../../Audio/Run")
+@export var audio_jump_path: NodePath = NodePath("../../Audio/Jump")
+@export var audio_death_path: NodePath = NodePath("../../Audio/Death")
+@export var audio_splash_path: NodePath = NodePath("../../Audio/Splash")
+@export var audio_swimming_path: NodePath = NodePath("../../Audio/Swimming")
+@export_range(1.0, 2.0, 0.01) var day_pacing_multiplier: float = 1.12
 @export var is_vined: bool = false
 @export var jump_force: float = JUMP_VELOCITY
+
+const BG_STREAM: AudioStream = preload("res://assets/audio/ambient/bg.mp3")
+const RUN_STREAM: AudioStream = preload("res://assets/audio/sfx/footstep.wav")
+const JUMP_STREAM: AudioStream = preload("res://assets/audio/sfx/jump.wav")
+const DEATH_STREAM: AudioStream = preload("res://assets/audio/sfx/death.wav")
+const SPLASH_STREAM: AudioStream = preload("res://assets/audio/sfx/splash.wav")
+const SWIMMING_STREAM: AudioStream = preload("res://assets/audio/sfx/swimming.mp3")
 
 var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
@@ -52,6 +66,14 @@ var _pick_action_available: bool = false
 var _leap_cooldown_seconds: float = 0.0
 var _control_fade_triggered: bool = false
 var _control_fade_tween: Tween
+var _audio_root: Node3D
+var _audio_bg: AudioStreamPlayer3D
+var _audio_run: AudioStreamPlayer3D
+var _audio_jump: AudioStreamPlayer3D
+var _audio_death: AudioStreamPlayer3D
+var _audio_splash: AudioStreamPlayer3D
+var _audio_swimming: AudioStreamPlayer3D
+var _was_in_water: bool = false
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -64,6 +86,9 @@ func _ready() -> void:
 		anim_dead = get_node_or_null("anime_dead") as AnimationPlayer
 	camera_distance = clampf(camera_distance, min_zoom, max_zoom)
 	_ensure_animation_loops()
+	_cache_audio_nodes()
+	_setup_audio_streams()
+	_play_background_audio()
 	_set_animation_state("idle")
 	_setup_session_flow()
 
@@ -124,7 +149,8 @@ func _physics_process(delta: float) -> void:
 			velocity.y = jump_force
 			_play_jump_dust_fx()
 
-	var speed_multiplier: float = 0.5 if is_in_water else 1.0
+	var day_speed_scale: float = _get_day_pacing_multiplier()
+	var speed_multiplier: float = (0.5 if is_in_water else 1.0) * day_speed_scale
 	if is_vined:
 		speed_multiplier *= 0.3
 	var move_direction: Vector3 = Vector3.ZERO
@@ -151,6 +177,8 @@ func _physics_process(delta: float) -> void:
 	_try_leap_assist(move_direction)
 	move_and_slide()
 
+	_sync_audio_root_position()
+	_update_audio_state(move_direction, is_in_water)
 	_update_armature_facing(move_direction, delta)
 	_update_camera(delta)
 	_handle_animations(move_direction, is_in_water)
@@ -170,6 +198,7 @@ func _process_dead_state(delta: float) -> void:
 
 	camera_distance = max_zoom
 	cam_rot_y += dead_auto_orbit_speed * delta
+	_update_audio_state(Vector3.ZERO, false)
 	_update_camera(delta)
 	_set_animation_state("dead")
 
@@ -183,6 +212,7 @@ func set_dead_state(value: bool = true) -> void:
 		_release_movement_inputs()
 		_drop_held_pickable()
 		camera_distance = max_zoom
+		_play_death_audio()
 		_set_animation_state("dead")
 		_begin_death_ui_swap()
 	else:
@@ -388,6 +418,7 @@ func _set_animation_state(next_state: String) -> void:
 			anim_swim.stop()
 		if anim_jump:
 			anim_jump.play("jump", animation_blend_time)
+		_play_jump_audio()
 		return
 
 	if next_state == "dead":
@@ -468,6 +499,117 @@ func _setup_session_flow() -> void:
 		_hud.call("set_username", username)
 	if _hud != null and _hud.has_method("set_elapsed_time"):
 		_hud.call("set_elapsed_time", 0)
+
+
+func _get_day_pacing_multiplier() -> float:
+	var current_day: int = _get_current_day()
+	return pow(day_pacing_multiplier, float(max(current_day, 0)))
+
+
+func _get_current_day() -> int:
+	if _hud != null and is_instance_valid(_hud) and _hud.has_method("get_elapsed_seconds"):
+		var elapsed_seconds: int = int(_hud.call("get_elapsed_seconds"))
+		return max(elapsed_seconds, 0) / SECONDS_PER_DAY
+	return 0
+
+
+func _cache_audio_nodes() -> void:
+	_audio_bg = get_node_or_null(audio_bg_path) as AudioStreamPlayer3D
+	_audio_run = get_node_or_null(audio_run_path) as AudioStreamPlayer3D
+	_audio_jump = get_node_or_null(audio_jump_path) as AudioStreamPlayer3D
+	_audio_death = get_node_or_null(audio_death_path) as AudioStreamPlayer3D
+	_audio_splash = get_node_or_null(audio_splash_path) as AudioStreamPlayer3D
+	_audio_swimming = get_node_or_null(audio_swimming_path) as AudioStreamPlayer3D
+	if _audio_bg != null:
+		_audio_root = _audio_bg.get_parent() as Node3D
+
+
+func _setup_audio_streams() -> void:
+	_assign_audio_stream(_audio_bg, BG_STREAM, true)
+	_assign_audio_stream(_audio_run, RUN_STREAM, true)
+	_assign_audio_stream(_audio_jump, JUMP_STREAM, false)
+	_assign_audio_stream(_audio_death, DEATH_STREAM, false)
+	_assign_audio_stream(_audio_splash, SPLASH_STREAM, false)
+	_assign_audio_stream(_audio_swimming, SWIMMING_STREAM, true)
+
+
+func _assign_audio_stream(player: AudioStreamPlayer3D, stream: AudioStream, loop: bool) -> void:
+	if player == null:
+		return
+	player.stream = stream
+	player.autoplay = false
+	player.unit_size = 1.0
+	if loop and not player.finished.is_connected(_on_looping_audio_finished.bind(player)):
+		player.finished.connect(_on_looping_audio_finished.bind(player))
+
+
+func _play_background_audio() -> void:
+	if _audio_bg == null:
+		return
+	if not _audio_bg.playing:
+		_audio_bg.play()
+
+
+func _play_jump_audio() -> void:
+	_play_one_shot(_audio_jump)
+
+
+func _play_death_audio() -> void:
+	_play_one_shot(_audio_death)
+
+
+func _play_splash_audio() -> void:
+	_play_one_shot(_audio_splash)
+
+
+func _play_one_shot(player: AudioStreamPlayer3D) -> void:
+	if player == null:
+		return
+	player.stop()
+	player.play()
+
+
+func _update_audio_state(move_direction: Vector3, is_in_water: bool) -> void:
+	if _is_dead:
+		_stop_audio_player(_audio_run)
+		_stop_audio_player(_audio_swimming)
+		return
+
+	if is_in_water:
+		if not _was_in_water:
+			_play_splash_audio()
+		if _audio_swimming != null and not _audio_swimming.playing:
+			_audio_swimming.play()
+		_stop_audio_player(_audio_run)
+	else:
+		_stop_audio_player(_audio_swimming)
+		if move_direction.length() > 0.1 and is_on_floor():
+			if _audio_run != null and not _audio_run.playing:
+				_audio_run.play()
+		else:
+			_stop_audio_player(_audio_run)
+
+	_was_in_water = is_in_water
+
+
+func _stop_audio_player(player: AudioStreamPlayer3D) -> void:
+	if player == null:
+		return
+	if player.playing:
+		player.stop()
+
+
+func _sync_audio_root_position() -> void:
+	if _audio_root == null:
+		return
+	_audio_root.global_position = global_position
+
+
+func _on_looping_audio_finished(player: AudioStreamPlayer3D) -> void:
+	if player == null or _is_dead:
+		return
+	if player == _audio_bg or player == _audio_swimming or player == _audio_run:
+		player.play()
 
 
 func _toggle_pickup() -> void:

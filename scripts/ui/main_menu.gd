@@ -3,9 +3,9 @@ extends Node2D
 const GAMEPLAY_SCENE := "res://scenes/gameplay.tscn"
 const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 
-@onready var _play_button: BaseButton = $CanvasLayer/Play
+@onready var _play_button: BaseButton = $CanvasLayer/vbox/Play
 @onready var _leaderboard_button: BaseButton = $CanvasLayer/Leaderboard
-@onready var _exit_button: BaseButton = $CanvasLayer/Exit
+@onready var _exit_button: BaseButton = $CanvasLayer/vbox/Exit
 @onready var _username_label: Label = $CanvasLayer/username
 
 

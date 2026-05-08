@@ -5,27 +5,27 @@
 [ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_7hsmw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k4w17"]
-bg_color = Color(1, 1, 1, 0.11764706)
+bg_color = Color(0, 0, 0, 0.3137255)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color(1, 1, 1, 0.3137255)
+border_color = Color(0, 0, 0, 0.3137255)
 corner_radius_top_left = 40
 corner_radius_top_right = 40
 corner_radius_bottom_right = 40
 corner_radius_bottom_left = 40
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qpvh6"]
-bg_color = Color(0, 0, 0, 0.11764706)
-border_color = Color(1, 1, 1, 1)
+bg_color = Color(0, 0, 0, 0.3137255)
+border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 40
 corner_radius_top_right = 40
 corner_radius_bottom_right = 40
 corner_radius_bottom_left = 40
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8cuoo"]
-bg_color = Color(1, 1, 1, 0.5176471)
+bg_color = Color(0, 0, 0, 0.3137255)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
@@ -52,26 +52,28 @@ corner_radius_bottom_left = 25
 corner_detail = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_twldb"]
-bg_color = Color(1, 1, 1, 0.08235294)
+bg_color = Color(0, 0, 0, 0.3137255)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color(1, 1, 1, 0.3137255)
+border_color = Color(0, 0, 0, 0.3137255)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nysna"]
-bg_color = Color(1, 1, 1, 0.40784314)
+bg_color = Color(0, 0, 0, 0.3137255)
+border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f6qnu"]
-bg_color = Color(0, 0, 0, 0.08235294)
+bg_color = Color(0, 0, 0, 0.3137255)
+border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
@@ -90,6 +92,7 @@ grow_vertical = 2
 color = Color(1, 1, 1, 0)
 
 [node name="JoyBase2" type="Panel" parent="." unique_id=1086074839]
+visible = false
 custom_minimum_size = Vector2(220, 220)
 anchors_preset = 2
 anchor_top = 1.0
@@ -137,6 +140,7 @@ value = 70.0
 show_percentage = false
 
 [node name="pick2" type="Button" parent="." unique_id=1198510360]
+visible = false
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -148,6 +152,7 @@ offset_right = -107.0
 offset_bottom = -97.0
 grow_horizontal = 0
 grow_vertical = 0
+focus_mode = 0
 theme_override_styles/normal = SubResource("StyleBoxFlat_twldb")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nysna")
 theme_override_styles/hover = SubResource("StyleBoxFlat_f6qnu")
@@ -166,6 +171,7 @@ offset_right = -107.0
 offset_bottom = -97.0
 grow_horizontal = 0
 grow_vertical = 0
+focus_mode = 0
 theme_override_styles/normal = SubResource("StyleBoxFlat_f6qnu")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nysna")
 theme_override_styles/hover = SubResource("StyleBoxFlat_f6qnu")
@@ -238,8 +244,8 @@ offset_right = 185.5
 offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.24705882, 1, 0.21960784, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.08627451)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.20392157)
 theme_override_constants/shadow_offset_y = 20
 theme_override_fonts/font = ExtResource("2_7hsmw")
 theme_override_font_sizes/font_size = 120

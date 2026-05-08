@@ -7,6 +7,7 @@ signal released(player: Node3D)
 @export var detection_area_path: NodePath = NodePath("Area3D")
 @export var skeleton_path: NodePath = NodePath("Skeleton3D")
 @export var target_player: CharacterBody3D
+@export var ground_color_source_path: NodePath
 @export var player_feet_node_path: NodePath = NodePath("feet")
 @export var fallback_target_offset: Vector3 = Vector3(0.0, 0.75, 0.0)
 @export var target_min_height_above_root: float = 0.25
@@ -30,6 +31,9 @@ var _player: Node3D
 var _player_body: CharacterBody3D
 var _is_grabbing: bool = false
 var _bone_indices: Array[int] = []
+var _segment_meshes: Array[MeshInstance3D] = []
+var _segment_materials: Array[StandardMaterial3D] = []
+var _ground_color_source: MeshInstance3D
 var _idle_time: float = 0.0
 var _bend_pole: Vector3 = Vector3.RIGHT
 var _smoothed_target_world_pos: Vector3 = Vector3.ZERO
@@ -47,12 +51,15 @@ func _ready() -> void:
 			_area.body_exited.connect(_on_body_exited)
 
 	_cache_bones()
+	_cache_segment_meshes()
+	_ground_color_source = get_node_or_null(ground_color_source_path) as MeshInstance3D
 	_apply_idle_pose()
 
 
 func _physics_process(_delta: float) -> void:
 	_idle_time += _delta
 	_refresh_target_state(_delta)
+	_sync_segment_color()
 
 	if _skeleton == null:
 		return
@@ -203,6 +210,53 @@ func _cache_bones() -> void:
 		var bone_idx: int = _skeleton.find_bone("Bone%d" % (i + 1))
 		if bone_idx >= 0:
 			_bone_indices.append(bone_idx)
+
+
+func _cache_segment_meshes() -> void:
+	_segment_meshes.clear()
+	_segment_materials.clear()
+
+	for i: int in range(segment_count):
+		var attachment: BoneAttachment3D = _skeleton.get_node_or_null("BoneAttachment3D%d" % (i + 1)) as BoneAttachment3D
+		if attachment == null:
+			continue
+
+		var segment_mesh: MeshInstance3D = attachment.get_node_or_null("MeshInstance3D") as MeshInstance3D
+		if segment_mesh == null:
+			continue
+
+		_segment_meshes.append(segment_mesh)
+		var material: StandardMaterial3D = segment_mesh.get_active_material(0) as StandardMaterial3D
+		if material == null:
+			material = StandardMaterial3D.new()
+			segment_mesh.set_surface_override_material(0, material)
+		elif material.resource_local_to_scene == false:
+			material = material.duplicate(true) as StandardMaterial3D
+			segment_mesh.set_surface_override_material(0, material)
+		_segment_materials.append(material)
+
+
+func _sync_segment_color() -> void:
+	if _segment_materials.is_empty():
+		return
+
+	var source_color: Color = _get_ground_source_color()
+	for material: StandardMaterial3D in _segment_materials:
+		if material != null:
+			material.albedo_color = source_color
+
+
+func _get_ground_source_color() -> Color:
+	if _ground_color_source == null or not is_instance_valid(_ground_color_source):
+		return Color.WHITE
+
+	var source_material: StandardMaterial3D = _ground_color_source.get_active_material(0) as StandardMaterial3D
+	if source_material == null:
+		source_material = _ground_color_source.get_surface_override_material(0) as StandardMaterial3D
+	if source_material == null:
+		return Color.WHITE
+
+	return source_material.albedo_color
 
 
 func _apply_idle_pose() -> void:

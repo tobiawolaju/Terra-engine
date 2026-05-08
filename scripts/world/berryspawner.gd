@@ -1,7 +1,10 @@
 extends Node
 
+const SECONDS_PER_DAY: int = 120
+
 @export var berry_scene: PackedScene
 @export var spawn_interval_seconds: float = 10.0
+@export_range(1.0, 2.0, 0.01) var day_pacing_multiplier: float = 1.12
 @export var max_berries: int = 10
 @export var min_berry_scale: float = 1.0
 @export var max_berry_scale: float = 3.0
@@ -62,6 +65,9 @@ var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
 var _delivery_combo_count: int = 0
 var _last_delivery_time: float = -1.0
+var _current_day: int = -1
+var _scaled_spawn_interval_seconds: float = 10.0
+var _scaled_oxygen_tick_seconds: float = 5.0
 var oxygen_level: float = 50.0
 var _displayed_oxygen_level: float = 50.0
 var _displayed_oxygen_from: float = 50.0
@@ -91,7 +97,6 @@ func _ready() -> void:
 	_spawn_timer.wait_time = maxf(spawn_interval_seconds, 0.1)
 	_spawn_timer.timeout.connect(_spawn_berry)
 	add_child(_spawn_timer)
-	_spawn_timer.start()
 
 	_oxygen_timer = Timer.new()
 	_oxygen_timer.one_shot = false
@@ -99,7 +104,7 @@ func _ready() -> void:
 	_oxygen_timer.wait_time = 5.0
 	_oxygen_timer.timeout.connect(_on_oxygen_tick)
 	add_child(_oxygen_timer)
-	_oxygen_timer.start()
+	_refresh_day_pacing(true)
 
 	_displayed_oxygen_level = oxygen_level
 	_displayed_oxygen_from = oxygen_level
@@ -112,6 +117,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_refresh_day_pacing(false)
 	_cleanup_spawned_berries()
 	if not _death_triggered:
 		_handle_lake_logic()
@@ -258,6 +264,37 @@ func _on_oxygen_tick() -> void:
 	if _death_triggered or _is_oxygen_refilling():
 		return
 	_add_oxygen(-2.0)
+
+
+func _refresh_day_pacing(force_restart: bool) -> void:
+	var current_day: int = _get_current_day()
+	if not force_restart and current_day == _current_day:
+		return
+
+	_current_day = current_day
+	var progression: float = _get_day_pacing_multiplier()
+	_scaled_spawn_interval_seconds = maxf(spawn_interval_seconds / progression, 0.1)
+	_scaled_oxygen_tick_seconds = maxf(5.0 / progression, 0.1)
+
+	if _spawn_timer != null:
+		_spawn_timer.wait_time = _scaled_spawn_interval_seconds
+		_spawn_timer.start(_scaled_spawn_interval_seconds)
+
+	if _oxygen_timer != null:
+		_oxygen_timer.wait_time = _scaled_oxygen_tick_seconds
+		_oxygen_timer.start(_scaled_oxygen_tick_seconds)
+
+
+func _get_day_pacing_multiplier() -> float:
+	return pow(day_pacing_multiplier, float(max(_current_day, 0)))
+
+
+func _get_current_day() -> int:
+	var hud := _get_hud()
+	if hud != null and hud.has_method("get_elapsed_seconds"):
+		var elapsed_seconds: int = int(hud.call("get_elapsed_seconds"))
+		return max(elapsed_seconds, 0) / SECONDS_PER_DAY
+	return 0
 
 
 func _add_oxygen(delta_amount: float) -> void:

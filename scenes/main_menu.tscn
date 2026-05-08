@@ -4,15 +4,7 @@
 [ext_resource type="Script" uid="uid://cl1ejphg8ne5v" path="res://scripts/ui/main_menu.gd" id="3_menu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ln24"]
-bg_color = Color(0.76862746, 0.40392157, 1, 1)
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
-bg_color = Color(0.76862746, 0.40392157, 1, 1)
-skew = Vector2(0.3, 0.1)
+bg_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 100
 corner_radius_top_right = 100
 corner_radius_bottom_right = 100
@@ -29,98 +21,85 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.13725491, 0.13725491, 0.13725491, 1)
+color = Color(0.73333335, 0.972549, 0, 1)
 
 [node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
-offset_left = 30.0
-offset_top = 77.0
-offset_right = 181.0
-offset_bottom = 111.0
+offset_left = 132.0
+offset_top = 25.0
+offset_right = 217.0
+offset_bottom = 56.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 30
-text = "playing as:"
+text = "guest"
 
 [node name="username2" type="Label" parent="CanvasLayer" unique_id=1266866292]
-offset_left = 211.0
-offset_top = 75.0
-offset_right = 362.0
-offset_bottom = 109.0
+modulate = Color(1, 1, 1, 0.48235294)
+offset_left = 21.0
+offset_top = 27.0
+offset_right = 151.0
+offset_bottom = 58.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
 theme_override_font_sizes/font_size = 30
-text = "username"
+text = "player"
 
 [node name="Main" type="Label" parent="CanvasLayer" unique_id=355620595]
-offset_left = 19.0
-offset_top = 25.0
-offset_right = 349.0
-offset_bottom = 76.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -418.0
+offset_top = 24.0
+offset_right = -23.0
+offset_bottom = 84.0
+grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 60
 text = "Terra Engine "
 
-[node name="Play" type="Button" parent="CanvasLayer" unique_id=637757913]
+[node name="vbox" type="VBoxContainer" parent="CanvasLayer" unique_id=971287418]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -86.25
-offset_top = -120.0
-offset_right = 86.25
-offset_bottom = -40.0
+offset_left = -200.0
+offset_top = -241.0
+offset_right = 200.0
+offset_bottom = -37.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="Play" type="Button" parent="CanvasLayer/vbox" unique_id=637757913]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_hover_color = Color(0.73333335, 0.972549, 0, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
 text = "Play
 "
 
-[node name="Leaderboard" type="Button" parent="CanvasLayer" unique_id=337940190]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 40.0
-offset_top = -120.0
-offset_right = 345.0
-offset_bottom = -40.0
-grow_vertical = 0
+[node name="Exit" type="Button" parent="CanvasLayer/vbox" unique_id=961361719]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_hover_color = Color(0.73333335, 0.972549, 0, 1)
 theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
-text = "Leaderboard"
-
-[node name="Exit" type="Button" parent="CanvasLayer" unique_id=463577426]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -235.0
-offset_top = -120.0
-offset_right = -40.0
-offset_bottom = -40.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("2_bqqt6")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_8ln24")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
 theme_override_styles/focus = SubResource("StyleBoxFlat_8ln24")
 text = "Exit"
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer" unique_id=1108268757]
