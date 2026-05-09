@@ -8,12 +8,12 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8ln24"]
 shader = ExtResource("3_wu84c")
 shader_parameter/spread = 0.5
-shader_parameter/size = 1.00000004680148
-shader_parameter/snow_color = Color(1, 1, 1, 1)
+shader_parameter/size = 0.5
+shader_parameter/snow_color = Color(1, 1, 1, 0.5058824)
 shader_parameter/snow_transparency = 0.2
-shader_parameter/speed = 0.5
+shader_parameter/speed = 0.250000011875
 shader_parameter/wind = -0.4999999287499999
-shader_parameter/num_of_layers = 80
+shader_parameter/num_of_layers = 40
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ln24"]
 bg_color = Color(1, 1, 1, 1)
@@ -93,7 +93,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1, 0.49411765, 1, 1)
 
 [node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
 offset_left = 132.0

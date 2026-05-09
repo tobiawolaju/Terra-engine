@@ -9,11 +9,15 @@ class_name RotatingSky
 
 var _current_degrees: float = -1.0
 var _rotation_span: float = 37.0
+var _rotate_x_radians: float = 0.0
+var _rotate_z_radians: float = 0.0
 
 
 func _ready() -> void:
 	_current_degrees = start_degrees
 	_rotation_span = end_degrees - start_degrees
+	_rotate_x_radians = deg_to_rad(rotate_x)
+	_rotate_z_radians = deg_to_rad(rotate_z)
 	_apply_rotation()
 
 
@@ -36,7 +40,7 @@ func _apply_rotation() -> void:
 		return
 
 	environment.sky_rotation = Vector3(
-		deg_to_rad(rotate_x),
+		_rotate_x_radians,
 		deg_to_rad(_current_degrees),
-		deg_to_rad(rotate_z)
+		_rotate_z_radians
 	)

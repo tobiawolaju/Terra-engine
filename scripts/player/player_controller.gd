@@ -8,6 +8,7 @@ const LEAP_VELOCITY: float = 5.2
 const LEAP_MOVE_THRESHOLD: float = 0.1
 const DEATH_OVERLAY_SCENE_PATH: String = "res://scenes/overlays/death_overlay.tscn"
 const SECONDS_PER_DAY: int = 120
+const DEATH_OVERLAY_SCENE: PackedScene = preload("res://scenes/overlays/death_overlay.tscn")
 
 @export var camera: Camera3D
 @export var hold_anchor: Node3D
@@ -290,13 +291,9 @@ func _swap_hud_to_death_overlay_after_delay() -> void:
 			_hud = null
 		hud_node.queue_free()
 
-	var death_overlay_scene: PackedScene = load(DEATH_OVERLAY_SCENE_PATH) as PackedScene
-	if death_overlay_scene == null:
-		push_warning("Failed to load death overlay scene at: %s" % DEATH_OVERLAY_SCENE_PATH)
-		return
-
-	var death_overlay_instance: Node = death_overlay_scene.instantiate()
+	var death_overlay_instance: Node = DEATH_OVERLAY_SCENE.instantiate()
 	if death_overlay_instance == null:
+		push_warning("Failed to instantiate death overlay scene at: %s" % DEATH_OVERLAY_SCENE_PATH)
 		return
 	var day_label: Label = death_overlay_instance.get_node_or_null("CanvasLayer/Dayspent") as Label
 	if day_label != null:

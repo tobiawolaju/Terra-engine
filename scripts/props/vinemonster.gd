@@ -38,6 +38,7 @@ var _idle_time: float = 0.0
 var _bend_pole: Vector3 = Vector3.RIGHT
 var _smoothed_target_world_pos: Vector3 = Vector3.ZERO
 var _has_smoothed_target: bool = false
+var _last_source_color: Color = Color(-1.0, -1.0, -1.0, -1.0)
 
 
 func _ready() -> void:
@@ -241,6 +242,9 @@ func _sync_segment_color() -> void:
 		return
 
 	var source_color: Color = _get_ground_source_color()
+	if source_color == _last_source_color:
+		return
+	_last_source_color = source_color
 	for material: StandardMaterial3D in _segment_materials:
 		if material != null:
 			material.albedo_color = source_color

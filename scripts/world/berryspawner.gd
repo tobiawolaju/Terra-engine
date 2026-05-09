@@ -13,6 +13,8 @@ const SECONDS_PER_DAY: int = 120
 @export var hud_tint_path: NodePath = NodePath("HUD/tint")
 @export var player_controller_path: NodePath = NodePath("player/CharacterBody3D")
 @export var deadalien_path: NodePath = NodePath("deadalien")
+@export var deadalien_path_2: NodePath = NodePath("deadalien2")
+@export var deadalien_path_3: NodePath = NodePath("deadalien3")
 @export var directional_light_path: NodePath = NodePath("WorldEnvironment2/DirectionalLight3D")
 @export var world_environment_path: NodePath = NodePath("WorldEnvironment2")
 @export var ground_mesh_path: NodePath = NodePath("ground/hill/hillmesh")
@@ -20,6 +22,7 @@ const SECONDS_PER_DAY: int = 120
 @export var lake_surface_y: float = 0.0
 @export var destroy_after_seconds: float = 5.0
 @export var deadalien_oxygen_reward: float = 45.0
+@export_range(0.0, 1.0, 0.01) var deadalien_oxygen_reward_fraction: float = 0.25
 @export var lake_label_path: NodePath = NodePath("berrylake/water/Label3D")
 @export_group("Oxygen Visuals")
 @export var light_good: Color = Color("f6e7b5")
@@ -48,7 +51,8 @@ const SECONDS_PER_DAY: int = 120
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _spawn_timer: Timer
 var _oxygen_timer: Timer
-var _spawned_berries: Array[WeakRef] = []
+var _spawned_berries: Array[Pickable] = []
+var _berry_pool: Array[Pickable] = []
 var _underwater_since: Dictionary = {}
 var _lake_label: Label3D
 var _directional_light: DirectionalLight3D
@@ -56,12 +60,12 @@ var _world_environment: WorldEnvironment
 var _ground_mesh: MeshInstance3D
 var _water_mesh: MeshInstance3D
 var _player_controller: Node
-var _deadalien: Node3D
+var _deadalien_nodes: Array[Node3D] = []
+var _spawn_points: Array[Node3D] = []
 var _hud_tint: ColorRect
 var _progress_fill_style: StyleBoxFlat
 var _player_vfx_mesh: MeshInstance3D
 var _hud: CanvasLayer
-var _deadalien_consumed: bool = false
 var _death_triggered: bool = false
 var _delivery_combo_count: int = 0
 var _last_delivery_time: float = -1.0
@@ -86,7 +90,13 @@ func _ready() -> void:
 	_hud = _get_hud()
 	_hud_tint = get_node_or_null(hud_tint_path) as ColorRect
 	_player_controller = get_node_or_null(player_controller_path)
-	_deadalien = get_node_or_null(deadalien_path) as Node3D
+	_deadalien_nodes = [
+		get_node_or_null(deadalien_path) as Node3D,
+		get_node_or_null(deadalien_path_2) as Node3D,
+		get_node_or_null(deadalien_path_3) as Node3D,
+	]
+	_spawn_points = _get_valid_spawn_points()
+	_prewarm_berry_pool()
 	_player_vfx_mesh = get_node_or_null(player_vfx_mesh_path) as MeshInstance3D
 	if progress_2d == null:
 		progress_2d = get_node_or_null("HUD/ProgressBar") as ProgressBar
@@ -118,14 +128,12 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_refresh_day_pacing(false)
-	_cleanup_spawned_berries()
 	if not _death_triggered:
 		_handle_lake_logic()
 	_update_oxygen_visuals(delta)
 
 
 func _spawn_berry() -> void:
-	_cleanup_spawned_berries()
 	if _spawned_berries.size() >= max(max_berries, 0):
 		return
 
@@ -133,30 +141,65 @@ func _spawn_berry() -> void:
 		push_warning("BerrySpawner: Assign a berry_scene in the inspector.")
 		return
 
-	var spawn_points: Array[Node3D] = _get_valid_spawn_points()
-	if spawn_points.is_empty():
+	if _spawn_points.is_empty():
 		push_warning("BerrySpawner: Assign at least one spawn point.")
 		return
 
-	var spawn_point: Node3D = spawn_points[_rng.randi_range(0, spawn_points.size() - 1)]
-	var berry: Node = berry_scene.instantiate()
+	var spawn_point: Node3D = _spawn_points[_rng.randi_range(0, _spawn_points.size() - 1)]
+	var berry: Pickable = _get_pooled_berry()
+	if berry == null:
+		push_warning("BerrySpawner: Failed to instantiate berry from pool or scene.")
+		return
 	var berry_3d := berry as Node3D
 	if berry_3d == null:
 		push_warning("BerrySpawner: berry_scene root must be a Node3D.")
 		berry.queue_free()
 		return
 
-	get_tree().current_scene.add_child(berry_3d)
-	berry_3d.global_transform = spawn_point.global_transform
+	if berry.get_parent() == null:
+		get_tree().current_scene.add_child(berry_3d)
 	var scale_min: float = minf(min_berry_scale, max_berry_scale)
 	var scale_max: float = maxf(min_berry_scale, max_berry_scale)
 	var random_scale: float = _rng.randf_range(scale_min, scale_max)
-	berry_3d.scale = Vector3.ONE * random_scale
+	var random_scale_vec: Vector3 = Vector3.ONE * random_scale
 	var oxygen_reward: float = _get_berry_oxygen_reward(random_scale)
-	berry_3d.set_meta("berry_scale", random_scale)
-	berry_3d.set_meta("oxygen_reward", oxygen_reward)
+	berry.prepare_for_spawn(spawn_point.global_transform, random_scale_vec, oxygen_reward)
 	_apply_berry_visuals(berry_3d, random_scale, oxygen_reward)
-	_spawned_berries.append(weakref(berry_3d))
+	_spawned_berries.append(berry)
+
+
+func _get_pooled_berry() -> Pickable:
+	if not _berry_pool.is_empty():
+		return _berry_pool.pop_back()
+	return _create_berry_instance()
+
+func _create_berry_instance() -> Pickable:
+	if berry_scene == null:
+		return null
+
+	var berry: Node = berry_scene.instantiate()
+	var berry_pickable := berry as Pickable
+	if berry_pickable == null:
+		return null
+	return berry_pickable
+
+
+func _prewarm_berry_pool() -> void:
+	var target_pool_size: int = max(max_berries, 0)
+	if target_pool_size <= 0:
+		return
+	var current_scene: Node = get_tree().current_scene
+	if current_scene == null:
+		return
+
+	for _i: int in range(target_pool_size):
+		var berry: Pickable = _create_berry_instance()
+		if berry == null:
+			return
+		if berry.get_parent() == null:
+			current_scene.add_child(berry)
+		berry.deactivate_for_pool()
+		_berry_pool.append(berry)
 
 
 func _get_valid_spawn_points() -> Array[Node3D]:
@@ -172,27 +215,19 @@ func _get_valid_spawn_points() -> Array[Node3D]:
 	if spawn_point_5 != null:
 		points.append(spawn_point_5)
 	return points
-
-
-func _cleanup_spawned_berries() -> void:
-	var alive: Array[WeakRef] = []
-	for berry_ref: WeakRef in _spawned_berries:
-		if berry_ref.get_ref() != null:
-			alive.append(berry_ref)
-	_spawned_berries = alive
-
-
 func _handle_lake_logic() -> void:
 	if _death_triggered:
 		return
 
 	var now_seconds: float = Time.get_ticks_msec() / 1000.0
+	var destroy_delay_seconds: float = maxf(destroy_after_seconds, 0.0)
 	var underwater_count: int = 0
 	var alive_ids: Dictionary = {}
 
-	for berry_ref: WeakRef in _spawned_berries:
-		var berry := berry_ref.get_ref() as Node3D
-		if berry == null:
+	for berry_index: int in range(_spawned_berries.size() - 1, -1, -1):
+		var berry: Pickable = _spawned_berries[berry_index]
+		if berry == null or not is_instance_valid(berry):
+			_spawned_berries.remove_at(berry_index)
 			continue
 
 		var berry_id: int = berry.get_instance_id()
@@ -204,17 +239,18 @@ func _handle_lake_logic() -> void:
 				_underwater_since[berry_id] = now_seconds
 
 			var underwater_duration: float = now_seconds - float(_underwater_since[berry_id])
-			if underwater_duration >= maxf(destroy_after_seconds, 0.0):
+			if underwater_duration >= destroy_delay_seconds:
 				var oxygen_reward: float = _get_berry_reward_from_node(berry)
 				_register_delivery_feedback(oxygen_reward, now_seconds)
 				_add_oxygen(oxygen_reward)
-				berry.queue_free()
+				_release_berry_to_pool(berry)
 				_underwater_since.erase(berry_id)
+				_spawned_berries.remove_at(berry_index)
 				underwater_count = max(underwater_count - 1, 0)
 		else:
 			_underwater_since.erase(berry_id)
 
-	underwater_count += _handle_deadalien_lake_logic(now_seconds, alive_ids)
+	underwater_count += _handle_deadalien_lake_logic(now_seconds, destroy_delay_seconds, alive_ids)
 
 	for berry_id: Variant in _underwater_since.keys():
 		if not alive_ids.has(berry_id):
@@ -223,32 +259,40 @@ func _handle_lake_logic() -> void:
 	_update_lake_label(underwater_count)
 
 
-func _handle_deadalien_lake_logic(now_seconds: float, alive_ids: Dictionary) -> int:
-	if _deadalien_consumed:
-		return 0
-	if _deadalien == null or not is_instance_valid(_deadalien):
-		_deadalien = get_node_or_null(deadalien_path) as Node3D
-	if _deadalien == null or not is_instance_valid(_deadalien):
-		return 0
+func _handle_deadalien_lake_logic(now_seconds: float, destroy_delay_seconds: float, alive_ids: Dictionary) -> int:
+	var underwater_count: int = 0
+	for deadalien_index: int in range(_deadalien_nodes.size()):
+		var deadalien: Node3D = _deadalien_nodes[deadalien_index]
+		if deadalien == null or not is_instance_valid(deadalien):
+			_deadalien_nodes[deadalien_index] = null
+			continue
 
-	var deadalien_id: int = _deadalien.get_instance_id()
-	alive_ids[deadalien_id] = true
+		var deadalien_id: int = deadalien.get_instance_id()
+		alive_ids[deadalien_id] = true
 
-	if _deadalien.global_position.y < lake_surface_y:
-		if not _underwater_since.has(deadalien_id):
-			_underwater_since[deadalien_id] = now_seconds
+		if deadalien.global_position.y < lake_surface_y:
+			underwater_count += 1
+			if not _underwater_since.has(deadalien_id):
+				_underwater_since[deadalien_id] = now_seconds
 
-		var underwater_duration: float = now_seconds - float(_underwater_since[deadalien_id])
-		if underwater_duration >= maxf(destroy_after_seconds, 0.0):
-			_add_oxygen(deadalien_oxygen_reward)
-			_deadalien.queue_free()
+			var underwater_duration: float = now_seconds - float(_underwater_since[deadalien_id])
+			if underwater_duration >= destroy_delay_seconds:
+				var oxygen_reward: float = deadalien_oxygen_reward * deadalien_oxygen_reward_fraction
+				_add_oxygen(oxygen_reward)
+				deadalien.queue_free()
+				_deadalien_nodes[deadalien_index] = null
+				_underwater_since.erase(deadalien_id)
+		else:
 			_underwater_since.erase(deadalien_id)
-			_deadalien_consumed = true
-			return 0
-		return 1
-	else:
-		_underwater_since.erase(deadalien_id)
-		return 0
+
+	return underwater_count
+
+
+func _release_berry_to_pool(berry: Pickable) -> void:
+	if berry == null or not is_instance_valid(berry):
+		return
+	berry.deactivate_for_pool()
+	_berry_pool.append(berry)
 
 
 func _update_lake_label(underwater_count: int) -> void:
