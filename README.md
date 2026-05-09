@@ -90,7 +90,6 @@ scripts/
   player/player_controller.gd
   world/berryspawner.gd
   world/pickable.gd
-  world/peashooter.gd
   ui/hud.gd
   ui/main_menu.gd
   ui/leaderboard_screen.gd

@@ -5,7 +5,6 @@ const LEADERBOARD_SCENE := "res://scenes/leaderboard.tscn"
 const BG_STREAM: AudioStream = preload("res://assets/audio/ambient/bg.wav")
 
 @onready var _play_button: BaseButton = $CanvasLayer/vbox/Play
-@onready var _leaderboard_button: BaseButton = $CanvasLayer/Leaderboard
 @onready var _exit_button: BaseButton = $CanvasLayer/vbox/Exit
 @onready var _username_label: Label = $CanvasLayer/username
 @onready var _menu_music: AudioStreamPlayer2D = $AudioStreamPlayer2D
@@ -23,8 +22,6 @@ func _ready() -> void:
 		WavedashFlow.username_updated.connect(_on_username_updated)
 	if _play_button != null and not _play_button.pressed.is_connected(_on_play_pressed):
 		_play_button.pressed.connect(_on_play_pressed)
-	if _leaderboard_button != null and not _leaderboard_button.pressed.is_connected(_on_leaderboard_pressed):
-		_leaderboard_button.pressed.connect(_on_leaderboard_pressed)
 	if _exit_button != null and not _exit_button.pressed.is_connected(_on_exit_pressed):
 		_exit_button.pressed.connect(_on_exit_pressed)
 
