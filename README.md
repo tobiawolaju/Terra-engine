@@ -1,151 +1,154 @@
-# Terra Engineer
+<div align="center">
 
-Terraforming survival game built for **Gamedev.js Jam 2026** (theme: **Machines**), and submitted to the **Open Source track**.
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/logo.png" alt="Terra Engine" width="340"/>
 
-> The last Terraformer left no manual.
->  
-> Just a body, a lake, and a machine that only works if you keep feeding it.
->  
-> You are not here to win. You are here to hold the system together for one more minute.
+# Terra Engine
 
-You are dropped on a failing planet with one job: keep oxygen alive for as long as possible.
+**Gamedev.js Jam 2026 · Theme: Machines · Open Source Track**
 
-## Jam Submission Snapshot
-
-- Jam: `Gamedev.js Jam 2026`
-- Theme: `Machines`
-- Engine: `Godot 4.6.x`
-- Platform: `Web (HTML5 export)`
-- Track: `Open Source`
-
-## Field Note
-
-This was built fast, under jam pressure, with a simple design rule:
-- If the machine is starving, the world should show it.
-- If the player fails, the system should remember it.
-- If the player survives longer, it should mean something.
-
-## What Is Implemented Right Now
-
-This README reflects what is currently wired in the project.
-
-### Core Survival Loop
-
-1. Oxygen starts at `50`.
-2. Oxygen drains by `2` every `5` seconds.
-3. Berries spawn around the map.
-4. Carry berries and drop them into the lake.
-5. A berry that stays underwater for `5` seconds is consumed and gives `+10` oxygen.
-6. If oxygen reaches `0`, game over triggers and your survival time is submitted to the leaderboard.
-
-There is also one extra risk/reward object:
-- A dead alien body can be pushed into the lake for a one-time `+45` oxygen bonus.
-
-### Player Mechanics
-
-- Third-person movement with camera-relative controls.
-- Jumping.
-- Water movement slowdown (50% speed).
-- Pick up and carry one nearby physics object at a time.
-- Drop held object on command.
-- Auto leap-assist while moving on ground (small periodic hop).
-- Death state with orbiting camera and death overlay.
-
-### UI and Flow
-
-- Splash scene -> main menu.
-- Main menu `Play` starts gameplay with a loading transition.
-- Main menu `Leaderboard` opens the online leaderboard screen.
-- HUD shows player username, time alive (seconds), touch joystick controls, and oxygen bar state.
-- Death overlay shows final time alive.
-
-### Online (Wavedash)
-
-- Fetches current username.
-- Posts survival score to leaderboard id: `survival_time`.
-- Reads top leaderboard entries for leaderboard scene.
-
-## Controls
-
-- Move: `W A S D`
-- Jump: `Space`
-- Pick/Drop item: `P`
-- Orbit camera: hold left mouse button + move mouse
-- Zoom: mouse wheel
-- Menu selections: left click
-
-## Project Structure
-
-```text
-scenes/
-  splash.tscn
-  main_menu.tscn
-  loading.tscn
-  gameplay.tscn
-  leaderboard.tscn
-  overlays/death_overlay.tscn
-  HUD.tscn
-
-scripts/
-  player/player_controller.gd
-  world/berryspawner.gd
-  world/pickable.gd
-  world/peashooter.gd
-  ui/hud.gd
-  ui/main_menu.gd
-  ui/leaderboard_screen.gd
-  ui/splash.gd
-  ui/screen_fader.gd
-  ui/loading_overlay.gd
-  wavedash/wavedash_init.gd
-```
-
-## Run Locally (Godot)
-
-1. Open `project.godot` in Godot 4.6.x.
-2. Run the default scene (splash).
-3. Play from menu.
-
-## Export Web Build
-
-`export_presets.cfg` is already set up for Web export to:
-
-- `Builds/index.html`
-
-Current repo also contains ready web export folders:
-- `Builds/`
-- `ItichIO/`
-
-## Why This Fits The Theme "Machines"
-
-The planet is treated like a machine with:
-- Inputs (berries and biomass).
-- Decay (oxygen drain).
-- Observable output (HUD + world color shifts).
-- Failure condition (oxygen collapse).
-
-Your job is to keep the system running under pressure.
-
-## Jam Intent
-
-Most survival games ask you to protect yourself.
-This one asks you to maintain a living system that is already failing.
-
-You are the maintenance worker, the fuel line, and the last backup process.
-Keep it running until it breaks, or until you do.
-
-## Open Source Track Notes
-
-- Full source code is included.
-- Gameplay logic is readable in GDScript (see `scripts/world/berryspawner.gd` and `scripts/player/player_controller.gd`).
-- Web export settings are included for reproducible builds.
-
-## Credits
-
-- See `assets/CREDITS.md` for asset attributions.
+[![Play Now](https://img.shields.io/badge/▶%20Play%20Now-Wavedash-6c47ff?style=for-the-badge)](https://wavedash.com/playtest/terraengine/982ee9a4-d669-4112-913b-ce13fbb2a852)
+[![Open Source](https://img.shields.io/badge/Track-Open%20Source-brightgreen?style=for-the-badge)](https://github.com/tobiawolaju/Terra-engine)
+[![Godot 4](https://img.shields.io/badge/Engine-Godot%204.6-blue?style=for-the-badge)](https://godotengine.org/)
 
 ---
 
-Built in jam time.
-Made for the Open Source track.
-Kept alive by anyone willing to carry one more berry.
+*The last Terraformer left no manual.*
+*Just a body, a lake, and a machine that only works if you keep feeding it.*
+*You are not here to win. You are here to hold the system together for one more minute.*
+
+</div>
+
+---
+
+## Screenshots
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(1).png" width="48%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(2).png" width="48%"/>
+
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(3).png" width="48%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(4).png" width="48%"/>
+
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(5).png" width="48%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(6).png" width="48%"/>
+
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(7).png" width="48%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(8).png" width="48%"/>
+
+<img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(9).png" width="32%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(10).png" width="32%"/> <img src="https://raw.githubusercontent.com/tobiawolaju/Terra-engine/master/assets/splashs/screenshots%20(11).png" width="32%"/>
+
+</div>
+
+---
+
+## The Idea
+
+Most survival games ask you to protect yourself.
+
+This one asks you to **maintain a living system that is already failing.**
+
+The planet is a machine:
+- **Inputs** — berries, biomass, anything organic
+- **Decay** — oxygen drains on a fixed clock, no pausing
+- **Output** — the HUD and world state show you exactly how close to collapse you are
+- **Failure condition** — oxygen reaches zero, score posts to the global leaderboard
+
+You are the maintenance worker, the fuel line, and the last backup process.
+
+---
+
+## How It Works
+
+| What | Detail |
+|---|---|
+| Oxygen starts at | `50` |
+| Drain rate | `-2` every `5s` |
+| Berry feed | Drop in lake → `5s` absorb → `+10 oxygen` |
+| Alien body bonus | One-time push into lake → `+45 oxygen` |
+| Fail state | Score (survival time) posts to global leaderboard |
+
+---
+
+## Gameplay
+
+- Third-person camera-relative movement
+- Pick up and carry physics objects
+- Water slows movement to 50%
+- Auto leap-assist on ground movement
+- Death overlay + orbiting camera on game over
+- Touch joystick support (mobile-ready HUD)
+
+**Controls**
+
+| Input | Action |
+|---|---|
+| `W A S D` | Move |
+| `Space` | Jump |
+| `P` | Pick up / Drop |
+| `LMB + drag` | Orbit camera |
+| `Scroll` | Zoom |
+
+---
+
+## Theme: Machines
+
+The game treats the planet as a **biological machine** — inputs, throughput, decay, output.
+
+Every mechanic maps to a mechanical concept:
+- The lake is the reactor
+- Berries are fuel
+- Oxygen is the system health metric
+- You are the operator keeping it from shutting down
+
+There is no enemy. The machine is the challenge.
+
+---
+
+## Online (Wavedash SDK)
+
+- Fetches current username on load
+- Posts `survival_time` score to global leaderboard on death
+- Leaderboard scene reads live top entries
+- Full Wavedash SDK integration via `addons/wavedash/`
+
+---
+
+## Open Source
+
+All gameplay logic is readable GDScript. Key files:
+
+```
+scripts/player/player_controller.gd   — movement, carry, death
+scripts/world/berryspawner.gd         — berry spawn logic
+scripts/world/pickable.gd             — physics pickup system
+scripts/wavedash/wavedash_init.gd     — SDK init + score post
+```
+
+Export settings included. Reproducible web build via Godot 4.6 HTML5 export.
+
+---
+
+## Run It Yourself
+
+```bash
+# Clone
+git clone https://github.com/tobiawolaju/Terra-engine.git
+
+# Open in Godot 4.6.x
+# Run default scene: scenes/splash.tscn
+```
+
+Web export preset already configured to `Builds/index.html`.
+
+---
+
+## Credits
+
+See [`assets/CREDITS.md`](assets/CREDITS.md) for full asset attributions.
+
+---
+
+<div align="center">
+
+Built in jam time. Shipped on MTN. Kept alive by anyone willing to carry one more berry.
+
+[![Play Terra Engine](https://img.shields.io/badge/▶%20Play%20Terra%20Engine-Now-6c47ff?style=for-the-badge)](https://wavedash.com/playtest/terraengine/982ee9a4-d669-4112-913b-ce13fbb2a852)
+
+</div>
