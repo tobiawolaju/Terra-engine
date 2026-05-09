@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://quqe226c53kj"]
+
+[ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="1_tr2b5"]
+[ext_resource type="Script" uid="uid://b47mloh60kfr2" path="res://scripts/ui/death_overlay.gd" id="2_0f1k9"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b1syl"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bwmcj"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4o22j"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xlh0n"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_im42x"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="DeathOverlay" type="Node2D" unique_id=510403098]
+script = ExtResource("2_0f1k9")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1262215064]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1484191316]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.69803923, 0, 0.45490196, 0.45882353)
+
+[node name="gameover" type="Label" parent="CanvasLayer" unique_id=387710538]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("1_tr2b5")
+theme_override_font_sizes/font_size = 100
+text = "Game over"
+
+[node name="Dayspent" type="Label" parent="CanvasLayer" unique_id=139643142]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -71.0
+offset_top = 29.0
+offset_right = 71.0
+offset_bottom = 69.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_tr2b5")
+theme_override_font_sizes/font_size = 40
+text = "Day 0.0"
+
+[node name="Play" type="Button" parent="CanvasLayer" unique_id=126788954]
+custom_minimum_size = Vector2(400, 100)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -140.0
+offset_right = 200.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_hover_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_fonts/font = ExtResource("1_tr2b5")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_b1syl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bwmcj")
+theme_override_styles/hover = SubResource("StyleBoxFlat_4o22j")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_xlh0n")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_b1syl")
+theme_override_styles/focus = SubResource("StyleBoxFlat_im42x")
+text = "Play
+"

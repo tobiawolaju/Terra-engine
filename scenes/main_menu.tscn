@@ -1,0 +1,177 @@
+[gd_scene format=3 uid="uid://dtrbeqj8cyhx5"]
+
+[ext_resource type="FontFile" uid="uid://e2lo7m6ncli2" path="res://assets/fonts/Mogra-Regular.ttf" id="2_bqqt6"]
+[ext_resource type="Texture2D" uid="uid://cwulb2q7jva58" path="res://assets/splashs/screenshots (11).png" id="2_wu84c"]
+[ext_resource type="Script" uid="uid://cl1ejphg8ne5v" path="res://scripts/ui/main_menu.gd" id="3_menu"]
+[ext_resource type="Shader" uid="uid://beutrpu0b6wnd" path="res://scenes/main_menu_overlay.gdshader" id="3_wu84c"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8ln24"]
+shader = ExtResource("3_wu84c")
+shader_parameter/spread = 0.5
+shader_parameter/size = 1.00000004680148
+shader_parameter/snow_color = Color(1, 1, 1, 1)
+shader_parameter/snow_transparency = 0.2
+shader_parameter/speed = 0.5
+shader_parameter/wind = -0.4999999287499999
+shader_parameter/num_of_layers = 80
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ln24"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu84c"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rtw2f"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oa1go"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tbmy8"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="MainMenu" type="Node2D" unique_id=104621629]
+script = ExtResource("3_menu")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1717860935]
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=1361006047]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -12.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_wu84c")
+stretch_mode = 6
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1195131001]
+material = SubResource("ShaderMaterial_8ln24")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.49411765, 1, 1)
+
+[node name="username" type="Label" parent="CanvasLayer" unique_id=1250270123]
+offset_left = 132.0
+offset_top = 25.0
+offset_right = 217.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 30
+text = "guest"
+
+[node name="username2" type="Label" parent="CanvasLayer" unique_id=1266866292]
+modulate = Color(1, 1, 1, 0.48235294)
+offset_left = 21.0
+offset_top = 27.0
+offset_right = 151.0
+offset_bottom = 58.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 30
+text = "player"
+
+[node name="Main" type="Label" parent="CanvasLayer" unique_id=355620595]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -418.0
+offset_top = 24.0
+offset_right = -23.0
+offset_bottom = 84.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 60
+text = "Terra Engine "
+
+[node name="vbox" type="VBoxContainer" parent="CanvasLayer" unique_id=971287418]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -241.0
+offset_right = 200.0
+offset_bottom = -37.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Play" type="Button" parent="CanvasLayer/vbox" unique_id=637757913]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_hover_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wu84c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_rtw2f")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_oa1go")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/focus = SubResource("StyleBoxFlat_tbmy8")
+text = "Play
+"
+
+[node name="Exit" type="Button" parent="CanvasLayer/vbox" unique_id=880254345]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_colors/font_hover_color = Color(0.73333335, 0.972549, 0, 1)
+theme_override_fonts/font = ExtResource("2_bqqt6")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wu84c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_rtw2f")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_oa1go")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_8ln24")
+theme_override_styles/focus = SubResource("StyleBoxFlat_tbmy8")
+text = "exit"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1068673191]

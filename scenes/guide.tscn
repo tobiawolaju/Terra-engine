@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://ceyst0avu5bs6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vbm33"]
+bg_color = Color(0, 0, 0, 0.38431373)
+border_color = Color(1, 1, 1, 0.3137255)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[node name="Guide" type="Control" unique_id=1420783893]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="PanelContainer" parent="." unique_id=2031014087]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vbm33")
+
+[node name="Label" type="Label" parent="ColorRect" unique_id=1754821744]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "You crash-landed on a dying planet.
+The Terraformer  before you figured it out.
+Pick their berries. Drop them in the lake.
+The lake breathes. You breathe.
+Don't stop feeding it.
+
+─────────────────────────────
+
+↑ ↓ ← →    Move
+Spacebar    Jump
+P           Pick up / Drop"
+horizontal_alignment = 1
+vertical_alignment = 1

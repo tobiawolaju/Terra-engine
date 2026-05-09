@@ -1,0 +1,9 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+assets/screenshots/Downloads/
+
+Builds/
+
+Builds/

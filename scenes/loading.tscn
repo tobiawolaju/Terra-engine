@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://ditg2fnu71m3u"]
+
+[ext_resource type="Texture2D" uid="uid://f5oma8515jav" path="res://assets/splashs/screenshots (8).png" id="1_ir5ef"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ir5ef"]
+bg_color = Color(1, 1, 1, 0.3137255)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc7uc"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+corner_detail = 20
+
+[node name="Loading" type="Control" unique_id=1057401283]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=649390560]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.73333335, 0.972549, 0, 1)
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=837535864]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -501.5
+offset_top = -76.0
+offset_right = 501.5
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_ir5ef")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yc7uc")
+show_percentage = false
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1222103208]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_ir5ef")
+
+[node name="Label" type="Label" parent="." unique_id=1559728806]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -429.0
+offset_top = -111.0
+offset_right = 430.0
+offset_bottom = -74.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.099012055, 0.36734304, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "Learn as much as you can from the dead Terraformers, you will need it."
