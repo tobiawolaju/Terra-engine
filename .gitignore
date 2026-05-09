@@ -7,3 +7,32 @@ assets/screenshots/Downloads/
 Builds/
 
 Builds/
+
+*.translation
+
+# Export builds
+Builds/
+ItichIO/
+ItichIO.zip         
+ItichIO-Copy.zip
+ItichIO.rar
+ItichIO/
+
+
+# Wavedash
+*.wasm
+*.pck
+
+# Downloaded installers (never again)
+assets/screenshots/Downloads/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor temp
+*.tmp
+*.bak
+*~
+assets/textures/*.jpg~
