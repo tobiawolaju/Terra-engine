@@ -1,5 +1,5 @@
 game_id = "j9720zs7eefdkj2wv5n1f152w585ff4h"
-upload_dir = "Builds"
+upload_dir = "Builds2"
 entrypoint = "index.html"
 
 [godot]
