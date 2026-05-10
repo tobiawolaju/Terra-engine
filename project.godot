@@ -11,9 +11,9 @@ config_version=5
 [application]
 
 config/name="TerraEngineer"
-run/max_fps=45
 run/main_scene="uid://2wuji004ymv2"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+run/max_fps=45
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
 config/icon="res://logo.png"
