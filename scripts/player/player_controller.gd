@@ -25,6 +25,8 @@ const DEATH_OVERLAY_SCENE: PackedScene = preload("res://scenes/overlays/death_ov
 @export var max_zoom: float = 14.0
 @export var altitude_zoom_factor: float = 1.25
 @export var mouse_orbit_sensitivity: float = 0.005
+@export var auto_camera_delay: float = 2.0
+@export var auto_camera_speed: float = 2.0
 @export var dead_auto_orbit_speed: float = 0.6
 @export var death_overlay_delay_seconds: float = 2.0
 @export var armature_turn_speed: float = 6.0
@@ -60,6 +62,7 @@ var cam_rot_x: float = deg_to_rad(15.0)
 var cam_rot_y: float = 0.0
 var current_animation: String = "idle"
 var _is_dead: bool = false
+var _time_since_camera_manual_move: float = 0.0
 var _death_ui_swap_started: bool = false
 var _death_score_submitted: bool = false
 var _held_pickable: Pickable
@@ -78,14 +81,13 @@ var _audio_splash: AudioStreamPlayer3D
 var _audio_swimming: AudioStreamPlayer3D
 var _was_in_water: bool = false
 var _day_speed_scale: float = 1.0
-var _day_pacing_timer: Timer
+var _day_pacing_timer_accumulator: float = 0.0
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
 
 func _ready() -> void:
 	# Low-end device performance optimizations
-	Engine.max_fps = 45
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	get_viewport().scaling_3d_scale = 0.75
 	get_viewport().msaa_3d = Viewport.MSAA_DISABLED
@@ -104,13 +106,13 @@ func _ready() -> void:
 	_set_animation_state("idle")
 	_setup_session_flow()
 	_refresh_day_speed_scale()
-	_day_pacing_timer = Timer.new()
-	_day_pacing_timer.one_shot = false
-	_day_pacing_timer.autostart = false
-	_day_pacing_timer.wait_time = 1.0
-	_day_pacing_timer.timeout.connect(_refresh_day_speed_scale)
-	add_child(_day_pacing_timer)
-	_day_pacing_timer.start()
+
+
+func _process(delta: float) -> void:
+	_day_pacing_timer_accumulator += delta
+	if _day_pacing_timer_accumulator >= 1.0:
+		_day_pacing_timer_accumulator = 0.0
+		_refresh_day_speed_scale()
 
 
 func _input(event: InputEvent) -> void:
@@ -120,6 +122,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if _mouse_over_joystick(event.position):
 			return
+		_time_since_camera_manual_move = 0.0
 		cam_rot_y -= event.relative.x * mouse_orbit_sensitivity
 		cam_rot_x = clampf(cam_rot_x + event.relative.y * mouse_orbit_sensitivity, min_pitch, max_pitch)
 
@@ -142,6 +145,7 @@ func _mouse_over_joystick(mouse_pos: Vector2) -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	_time_since_camera_manual_move += delta
 	_leap_cooldown_seconds = maxf(_leap_cooldown_seconds - delta, 0.0)
 
 	if _is_dead:
@@ -218,6 +222,13 @@ func _physics_process(delta: float) -> void:
 
 	_update_audio_state(move_direction, is_in_water)
 	_update_armature_facing(move_direction, delta)
+	
+	if move_direction.length() > 0.1 and _time_since_camera_manual_move >= auto_camera_delay:
+		var target_cam_rot_y: float = armature.rotation.y - PI
+		var angle_diff: float = angle_difference(cam_rot_y, target_cam_rot_y)
+		if abs(angle_diff) > 0.01:
+			cam_rot_y = lerp_angle(cam_rot_y, target_cam_rot_y, delta * auto_camera_speed)
+
 	_update_camera(delta)
 	_handle_animations(move_direction, is_in_water)
 
