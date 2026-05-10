@@ -5,17 +5,6 @@
 assets/screenshots/Downloads/
 
 
-
-*.translation
-
-# Export builds
-
-
-
-# Wavedash
-*.wasm
-*.pck
-
 # Downloaded installers (never again)
 assets/screenshots/Downloads/
 
@@ -25,7 +14,3 @@ Thumbs.db
 desktop.ini
 
 # Editor temp
-*.tmp
-*.bak
-*~
-assets/textures/*.jpg~
