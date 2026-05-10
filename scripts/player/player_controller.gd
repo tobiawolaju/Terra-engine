@@ -82,6 +82,7 @@ var _audio_swimming: AudioStreamPlayer3D
 var _was_in_water: bool = false
 var _day_speed_scale: float = 1.0
 var _day_pacing_timer_accumulator: float = 0.0
+var _startup_initialized: bool = false
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -101,11 +102,24 @@ func _ready() -> void:
 	_ensure_animation_loops()
 	_cache_audio_nodes()
 	_setup_audio_streams()
-	if _audio_bg != null and not _audio_bg.playing:
-		_audio_bg.play()
+	call_deferred("_finish_startup")
+
+
+func _finish_startup() -> void:
+	if _startup_initialized:
+		return
+	_startup_initialized = true
+
+	await get_tree().process_frame
+
 	_set_animation_state("idle")
 	_setup_session_flow()
 	_refresh_day_speed_scale()
+
+	# Browsers can block autoplay even after scene transitions, so keep the
+	# world playable without depending on immediate background audio.
+	if not OS.has_feature("web") and _audio_bg != null and not _audio_bg.playing:
+		_audio_bg.play()
 
 
 func _process(delta: float) -> void:

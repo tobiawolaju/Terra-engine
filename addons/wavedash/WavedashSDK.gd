@@ -83,6 +83,9 @@ func _enter_tree():
 	_log("_enter_tree() called, platform: %s" % OS.get_name())
 	_entered_tree = true
 	if _is_web:
+		if not bool(JavaScriptBridge.eval("typeof window.WavedashJS !== 'undefined'")):
+			_log("WavedashJS not present on window; continuing without web bridge")
+			return
 		WavedashJS = JavaScriptBridge.get_interface("WavedashJS")
 		if not WavedashJS:
 			push_error("WavedashSDK: WavedashJS not found on window")

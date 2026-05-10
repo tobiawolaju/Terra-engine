@@ -90,6 +90,10 @@ func change_scene_with_loading(path: String) -> void:
 	if result != OK:
 		push_error("Failed to change scene to '%s' (error %s)." % [path, str(result)])
 
+	if OS.has_feature("web"):
+		_finish_transition()
+		return
+
 	await get_tree().process_frame
 	await _play_loading_exit()
 	_finish_transition()

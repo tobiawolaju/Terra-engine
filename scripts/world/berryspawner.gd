@@ -98,7 +98,6 @@ func _ready() -> void:
 		get_node_or_null(deadalien_path_3) as Node3D,
 	]
 	_spawn_points = _get_valid_spawn_points()
-	_prewarm_berry_pool()
 	_player_vfx_mesh = get_node_or_null(player_vfx_mesh_path) as MeshInstance3D
 	if progress_2d == null:
 		progress_2d = get_node_or_null("HUD/ProgressBar") as ProgressBar
@@ -142,8 +141,21 @@ func _ready() -> void:
 	_apply_player_oxygen_fx(_displayed_oxygen_level)
 	_update_lake_label(0)
 
-	_logic_timer.start()
-	_visual_timer.start()
+	call_deferred("_finish_startup")
+
+
+func _finish_startup() -> void:
+	await get_tree().physics_frame
+	_prewarm_berry_pool()
+
+	if _spawn_timer != null:
+		_spawn_timer.start()
+	if _oxygen_timer != null:
+		_oxygen_timer.start()
+	if _logic_timer != null:
+		_logic_timer.start()
+	if _visual_timer != null:
+		_visual_timer.start()
 
 
 func _spawn_berry() -> void:
