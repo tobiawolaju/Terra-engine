@@ -13,7 +13,7 @@ shader_parameter/snow_color = Color(1, 1, 1, 0.5058824)
 shader_parameter/snow_transparency = 0.2
 shader_parameter/speed = 0.250000011875
 shader_parameter/wind = -0.4999999287499999
-shader_parameter/num_of_layers = 40
+shader_parameter/num_of_layers = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ln24"]
 bg_color = Color(1, 1, 1, 1)

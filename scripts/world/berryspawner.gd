@@ -51,6 +51,8 @@ const SECONDS_PER_DAY: int = 120
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _spawn_timer: Timer
 var _oxygen_timer: Timer
+var _logic_timer: Timer
+var _visual_timer: Timer
 var _spawned_berries: Array[Pickable] = []
 var _berry_pool: Array[Pickable] = []
 var _underwater_since: Dictionary = {}
@@ -114,6 +116,21 @@ func _ready() -> void:
 	_oxygen_timer.wait_time = 5.0
 	_oxygen_timer.timeout.connect(_on_oxygen_tick)
 	add_child(_oxygen_timer)
+
+	_logic_timer = Timer.new()
+	_logic_timer.one_shot = false
+	_logic_timer.autostart = false
+	_logic_timer.wait_time = 0.25
+	_logic_timer.timeout.connect(_on_logic_tick)
+	add_child(_logic_timer)
+
+	_visual_timer = Timer.new()
+	_visual_timer.one_shot = false
+	_visual_timer.autostart = false
+	_visual_timer.wait_time = 0.05
+	_visual_timer.timeout.connect(_on_visual_tick)
+	add_child(_visual_timer)
+
 	_refresh_day_pacing(true)
 
 	_displayed_oxygen_level = oxygen_level
@@ -125,12 +142,8 @@ func _ready() -> void:
 	_apply_player_oxygen_fx(_displayed_oxygen_level)
 	_update_lake_label(0)
 
-
-func _process(delta: float) -> void:
-	_refresh_day_pacing(false)
-	if not _death_triggered:
-		_handle_lake_logic()
-	_update_oxygen_visuals(delta)
+	_logic_timer.start()
+	_visual_timer.start()
 
 
 func _spawn_berry() -> void:
@@ -308,6 +321,16 @@ func _on_oxygen_tick() -> void:
 	if _death_triggered or _is_oxygen_refilling():
 		return
 	_add_oxygen(-2.0)
+
+
+func _on_logic_tick() -> void:
+	_refresh_day_pacing(false)
+	if not _death_triggered:
+		_handle_lake_logic()
+
+
+func _on_visual_tick() -> void:
+	_update_oxygen_visuals(_visual_timer.wait_time)
 
 
 func _refresh_day_pacing(force_restart: bool) -> void:

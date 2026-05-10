@@ -39,6 +39,7 @@ var _bend_pole: Vector3 = Vector3.RIGHT
 var _smoothed_target_world_pos: Vector3 = Vector3.ZERO
 var _has_smoothed_target: bool = false
 var _last_source_color: Color = Color(-1.0, -1.0, -1.0, -1.0)
+var _update_timer: Timer
 
 
 func _ready() -> void:
@@ -55,11 +56,19 @@ func _ready() -> void:
 	_cache_segment_meshes()
 	_ground_color_source = get_node_or_null(ground_color_source_path) as MeshInstance3D
 	_apply_idle_pose()
+	_update_timer = Timer.new()
+	_update_timer.one_shot = false
+	_update_timer.autostart = false
+	_update_timer.wait_time = 0.05
+	_update_timer.timeout.connect(_on_update_tick)
+	add_child(_update_timer)
+	_update_timer.start()
 
 
-func _physics_process(_delta: float) -> void:
-	_idle_time += _delta
-	_refresh_target_state(_delta)
+func _on_update_tick() -> void:
+	var delta: float = _update_timer.wait_time
+	_idle_time += delta
+	_refresh_target_state(delta)
 	_sync_segment_color()
 
 	if _skeleton == null:
@@ -71,7 +80,7 @@ func _physics_process(_delta: float) -> void:
 			_smoothed_target_world_pos = target_world_pos
 			_has_smoothed_target = true
 		else:
-			var follow_alpha: float = clampf(_delta * 8.0 * maxf(grab_speed_multiplier, 0.0), 0.0, 1.0)
+			var follow_alpha: float = clampf(delta * 8.0 * maxf(grab_speed_multiplier, 0.0), 0.0, 1.0)
 			_smoothed_target_world_pos = _smoothed_target_world_pos.lerp(target_world_pos, follow_alpha)
 		_apply_chain_pose(_smoothed_target_world_pos, curve_height, curve_side_offset)
 	else:

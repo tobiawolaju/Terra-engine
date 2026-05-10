@@ -77,6 +77,8 @@ var _audio_death: AudioStreamPlayer3D
 var _audio_splash: AudioStreamPlayer3D
 var _audio_swimming: AudioStreamPlayer3D
 var _was_in_water: bool = false
+var _day_speed_scale: float = 1.0
+var _day_pacing_timer: Timer
 
 @onready var _username_3d: Label3D = $Armature/Skeleton3D/BoneAttachment3D/username
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
@@ -95,6 +97,14 @@ func _ready() -> void:
 		_audio_bg.play()
 	_set_animation_state("idle")
 	_setup_session_flow()
+	_refresh_day_speed_scale()
+	_day_pacing_timer = Timer.new()
+	_day_pacing_timer.one_shot = false
+	_day_pacing_timer.autostart = false
+	_day_pacing_timer.wait_time = 1.0
+	_day_pacing_timer.timeout.connect(_refresh_day_speed_scale)
+	add_child(_day_pacing_timer)
+	_day_pacing_timer.start()
 
 
 func _input(event: InputEvent) -> void:
@@ -163,8 +173,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("jump") and not is_in_water:
 			velocity.y = jump_force
 
-	var day_speed_scale: float = _get_day_pacing_multiplier()
-	var speed_multiplier: float = (0.5 if is_in_water else 1.0) * day_speed_scale
+	var speed_multiplier: float = (0.5 if is_in_water else 1.0) * _day_speed_scale
 	if is_vined:
 		speed_multiplier *= 0.3
 	var move_direction: Vector3 = Vector3.ZERO
@@ -514,8 +523,11 @@ func _setup_session_flow() -> void:
 
 
 func _get_day_pacing_multiplier() -> float:
-	var current_day: int = _get_current_day()
-	return pow(day_pacing_multiplier, float(max(current_day, 0)))
+	return pow(day_pacing_multiplier, float(max(_get_current_day(), 0)))
+
+
+func _refresh_day_speed_scale() -> void:
+	_day_speed_scale = _get_day_pacing_multiplier()
 
 
 func _get_current_day() -> int:

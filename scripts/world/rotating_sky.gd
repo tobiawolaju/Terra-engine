@@ -11,6 +11,7 @@ var _current_degrees: float = -1.0
 var _rotation_span: float = 37.0
 var _rotate_x_radians: float = 0.0
 var _rotate_z_radians: float = 0.0
+var _rotation_timer: Timer
 
 
 func _ready() -> void:
@@ -19,16 +20,23 @@ func _ready() -> void:
 	_rotate_x_radians = deg_to_rad(rotate_x)
 	_rotate_z_radians = deg_to_rad(rotate_z)
 	_apply_rotation()
+	_rotation_timer = Timer.new()
+	_rotation_timer.one_shot = false
+	_rotation_timer.autostart = false
+	_rotation_timer.wait_time = 0.25
+	_rotation_timer.timeout.connect(_on_rotation_tick)
+	add_child(_rotation_timer)
+	_rotation_timer.start()
 
 
-func _process(delta: float) -> void:
+func _on_rotation_tick() -> void:
 	if environment == null:
 		return
 	if is_equal_approx(_rotation_span, 0.0):
 		return
 
 	_current_degrees = wrapf(
-		_current_degrees + (rotation_speed_degrees_per_second * delta),
+		_current_degrees + (rotation_speed_degrees_per_second * _rotation_timer.wait_time),
 		minf(start_degrees, end_degrees),
 		maxf(start_degrees, end_degrees)
 	)

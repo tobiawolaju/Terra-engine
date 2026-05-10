@@ -38,10 +38,12 @@ func _ready() -> void:
 	joy_base.mouse_filter = Control.MOUSE_FILTER_STOP
 	joy_knob.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	joy_base.gui_input.connect(_on_joy_base_gui_input)
+	joy_base.resized.connect(_on_joy_base_resized)
 	if pick_button != null:
 		pick_button.pressed.connect(_on_pick_button_pressed)
 	_refresh_geometry()
 	_reset_joystick()
+	call_deferred("_refresh_geometry")
 	set_username("...")
 	set_elapsed_time(0)
 	_start_elapsed_timer()
@@ -85,17 +87,16 @@ func _on_joy_base_gui_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func _process(_delta: float) -> void:
-	if _max_offset <= 0.0:
-		_refresh_geometry()
-
-
 func _refresh_geometry() -> void:
 	if joy_base == null or joy_knob == null:
 		return
 
 	_base_center = joy_base.size * 0.5
 	_max_offset = max(1.0, (joy_base.size.x * 0.5) - (joy_knob.size.x * 0.5))
+
+
+func _on_joy_base_resized() -> void:
+	_refresh_geometry()
 
 
 func _update_joystick(local_pos: Vector2) -> void:
