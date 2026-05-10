@@ -47,8 +47,10 @@ func _apply_rotation() -> void:
 	if environment == null:
 		return
 
-	environment.sky_rotation = Vector3(
-		_rotate_x_radians,
-		deg_to_rad(_current_degrees),
-		_rotate_z_radians
-	)
+	# WARNING: In Godot 4, changing sky_rotation at runtime forces the engine
+	# to recompute irradiance maps every tick, causing massive FPS drops!
+	# environment.sky_rotation = Vector3(
+	# 	_rotate_x_radians,
+	# 	deg_to_rad(_current_degrees),
+	# 	_rotate_z_radians
+	# )

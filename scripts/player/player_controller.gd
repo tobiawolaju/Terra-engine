@@ -84,6 +84,12 @@ var _day_pacing_timer: Timer
 @onready var _hud: CanvasLayer = get_node_or_null("../../HUD")
 
 func _ready() -> void:
+	# Low-end device performance optimizations
+	Engine.max_fps = 45
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+	get_viewport().scaling_3d_scale = 0.75
+	get_viewport().msaa_3d = Viewport.MSAA_DISABLED
+
 	_pick_action_available = InputMap.has_action("pick")
 	if not _pick_action_available:
 		push_warning("Input action 'pick' is missing. Add it in Project Settings > Input Map.")
