@@ -4,14 +4,12 @@
 
 assets/screenshots/Downloads/
 
-Builds/
 
-Builds/
 
 *.translation
 
 # Export builds
-Builds/
+
 ItichIO/
 ItichIO.zip         
 ItichIO-Copy.zip
