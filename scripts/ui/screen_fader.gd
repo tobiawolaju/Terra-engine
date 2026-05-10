@@ -55,38 +55,32 @@ func change_scene_with_loading(path: String) -> void:
 	_show_loading_overlay()
 	await _play_loading_enter()
 
-	var loaded_resource: Resource = null
-	
-	if OS.has_feature("web"):
-		# Synchronous fallback for web to prevent ThreadLoad hanging on 1GB RAM Android
-		for i in 3:
-			await get_tree().process_frame # Allow loading screen to draw
-		_set_loading_progress(0.5)
-		loaded_resource = ResourceLoader.load(path, "PackedScene")
-		_set_loading_progress(1.0)
-	else:
-		var request_result := ResourceLoader.load_threaded_request(path, "PackedScene")
-		if request_result != OK:
-			push_error("Failed to start threaded load for '%s' (error %s)." % [path, str(request_result)])
+	var request_result := ResourceLoader.load_threaded_request(path, "PackedScene")
+	if request_result != OK:
+		push_error("Failed to start threaded load for '%s' (error %s)." % [path, str(request_result)])
+		_finish_transition()
+		return
+
+	var progress: Array = []
+	var displayed_progress := 0.0
+	while true:
+		progress.clear()
+		var status := ResourceLoader.load_threaded_get_status(path, progress)
+		if progress.size() > 0:
+			displayed_progress = maxf(displayed_progress, float(progress[0]))
+		else:
+			displayed_progress = minf(displayed_progress + 0.015, 0.9)
+		_set_loading_progress(displayed_progress)
+		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			_set_loading_progress(1.0)
+			break
+		if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			push_error("Threaded load failed for '%s' (status %s)." % [path, str(status)])
 			_finish_transition()
 			return
+		await get_tree().process_frame
 
-		var progress: Array = []
-		while true:
-			progress.clear()
-			var status := ResourceLoader.load_threaded_get_status(path, progress)
-			if progress.size() > 0:
-				_set_loading_progress(float(progress[0]))
-			if status == ResourceLoader.THREAD_LOAD_LOADED:
-				_set_loading_progress(1.0)
-				break
-			if status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-				push_error("Threaded load failed for '%s' (status %s)." % [path, str(status)])
-				_finish_transition()
-				return
-			await get_tree().process_frame
-
-		loaded_resource = ResourceLoader.load_threaded_get(path)
+	var loaded_resource := ResourceLoader.load_threaded_get(path)
 	if loaded_resource == null or not (loaded_resource is PackedScene):
 		push_error("Loaded resource for '%s' is not a PackedScene." % path)
 		_finish_transition()
