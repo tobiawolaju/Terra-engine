@@ -6,7 +6,7 @@
 
 **Gamedev.js Jam 2026 · Theme: Machines · Open Source Track**
 
-[![Play Now](https://img.shields.io/badge/▶%20Play%20Now-Wavedash-6c47ff?style=for-the-badge)](https://wavedash.com/terraengine)
+[![Play Now](https://img.shields.io/badge/▶%20Play%20Now-Wavedash-6c47ff?style=for-the-badge)]([https://wavedash.com/terraengine](https://wavedash.com/games/terraengine))
 [![Open Source](https://img.shields.io/badge/Track-Open%20Source-brightgreen?style=for-the-badge)](https://github.com/tobiawolaju/Terra-engine)
 [![Godot 4](https://img.shields.io/badge/Engine-Godot%204.6-blue?style=for-the-badge)](https://godotengine.org/)
 
